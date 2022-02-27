@@ -3,7 +3,7 @@ pytz
 Flask
 Flask-WTF
 pymongo
-WTForms
+WTForms==2.3.3
 Flask-pymongo
 Flask-Mail
 psycopg2-binary

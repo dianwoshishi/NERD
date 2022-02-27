@@ -8,26 +8,31 @@ if ! [ -e /vagrant_provisioning ]
 then
 # print section headers in blue color
 echob () {
-  tput setaf 4 # light blue
-  tput bold
+  # tput setaf 4 # light blue
+  # tput bold
   echo "$@"
-  tput sgr0
+  # tput sgr0
 }
 
 # print important notes in yellow color
 echoy () {
-  tput setaf 3 # yellow
-  tput bold
+  # tput setaf 3 # yellow
+  # tput bold
   echo "$@"
-  tput sgr0
+  # tput sgr0
 }
 
 # print warnings and errors in red color
 echor () {
-  tput setaf 1 # red
-  tput bold
+  # tput setaf 1 # red
+  # tput bold
   echo "$@"
-  tput sgr0
+  # tput sgr0
+}
+
+cp_systemctl() {
+  setenforce 0
+  cp -rf systemctl.py /usr/bin/systemctl && chmod a+x /usr/bin/systemctl
 }
 
 else

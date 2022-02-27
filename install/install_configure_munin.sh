@@ -10,7 +10,7 @@ BASEDIR=$(dirname $0)
 . $BASEDIR/common.sh
 
 echob "=============== Install & configure Munin ==============="
-
+cp_systemctl
 yum -y -q install munin munin-node
 
 # ** Configure munin-node **
@@ -27,19 +27,19 @@ rm /etc/munin/plugins/nerd_mongo_rs
 # Enable Apache and named (BIND) plugins
 ln -s /usr/share/munin/plugins/apache_* /etc/munin/plugins/
 ln -s /usr/share/munin/plugins/named /etc/munin/plugins/
-
+cp_systemctl
 # Run munin-node
 systemctl enable munin-node
 systemctl restart munin-node
-
+cp_systemctl
 # ** Enable web access **
 # Copy prepared config file for Apache
 cp $BASEDIR/httpd/munin.conf /etc/httpd/conf.d/munin.conf
 
 touch /etc/munin/munin-htpasswd
-
+cp_systemctl
 systemctl reload httpd
-
+cp_systemctl
 echoy
 echoy "INFO: Munin is available at http://<this_host>/munin/ (if NERD is not installed into \"/\")"
 echoy "INFO: To enable access, add an account to /etc/munin/munin-htpasswd:"

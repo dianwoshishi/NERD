@@ -40,9 +40,11 @@ if [ "$debug" = 1 ] ; then
   echor "WARNING: SETTING UP DEBUG MODE!"
 fi
 
+cp_systemct
 echob "** Installing Apache and WSGI **"
 yum install -q -y httpd httpd-devel mod_wsgi
 pip3 -q install mod_wsgi
+cp_systemct
 
 # Replace the stock mod_wsgi.so with the one from Python36
 rm -f /usr/lib64/httpd/modules/mod_wsgi.so
@@ -72,7 +74,8 @@ echob "** Setting up firewall (allow port 80, 443) **"
 iptables -I INPUT 1 -p TCP --dport 80 -j ACCEPT
 iptables -I INPUT 1 -p TCP --dport 443 -j ACCEPT
 iptables-save > /etc/sysconfig/iptables
-
+cp_systemctl
 echob "** Starting Apache **"
 systemctl enable httpd
 systemctl restart httpd
+cp_systemctl

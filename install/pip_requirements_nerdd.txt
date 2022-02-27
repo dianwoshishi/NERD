@@ -16,6 +16,6 @@ numpy
 xgboost==1.0.2
 pymisp==2.4.111.2
 zmq
-amqpstorm
+amqpstorm==2.10.0
 jsonpath_rw
 jsonpath_rw_ext

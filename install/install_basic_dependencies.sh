@@ -7,6 +7,7 @@ BASEDIR=$(dirname $0)
 echob "=============== Install basic dependencies ==============="
 
 echob "** Installing basic RPM packages **"
+cp_systemctl
 yum install -y -q https://dl.fedoraproject.org/pub/epel/epel-release-latest-7.noarch.rpm
 yum install -y -q git wget gcc vim python36 python36-devel python36-setuptools
 yum install -y -q centos-release-scl # needed to get llvm-toolset-7-clang, a dependency of postgresql11-devel
@@ -17,7 +18,7 @@ if ! yum list installed postgresql11-server >/dev/null 2>&1 ; then
   yum install -y -q https://download.postgresql.org/pub/repos/yum/reporpms/EL-7-x86_64/pgdg-redhat-repo-latest.noarch.rpm
   yum install -y -q postgresql11-server postgresql11-devel
 fi
-
+cp_systemctl
 export PATH="$PATH:/usr/pgsql-11/bin/"
 
 # Initialize database (creates DB files in /var/lib/pgsql/11/data/)
@@ -35,11 +36,11 @@ fi
 # It allows to use "psql -U user" instead of "sudo -u USER psql"
 # and it allows easier connection from web server
 sed -i -E '/^local|127\.0\.0\.1\/32|::1\/128/ s/[^ ]+$/trust/' /var/lib/pgsql/11/data/pg_hba.conf
-
+cp_systemctl
 # Start PostgreSQL
 systemctl enable postgresql-11.service
 systemctl restart postgresql-11.service
-
+cp_systemctl
 
 # Note: Installation of Python packages must be after installation of postgresql11-devel, since psycopg2 package is compiled from source and needs it.
 echob "** Installing pip **"
@@ -50,6 +51,7 @@ easy_install-3.6 --prefix /usr pip
 # ln -s /usr/bin/python3.6 /usr/bin/python3
 
 echob "** Installing Python packages **"
+pip3 install --upgrade pip
 pip3 install -q -r $BASEDIR/pip_requirements_nerdd.txt
 pip3 install -q -r $BASEDIR/pip_requirements_nerdweb.txt
 
@@ -64,7 +66,7 @@ gpgcheck=1
 enabled=1
 gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc
 ' > /etc/yum.repos.d/mongodb-org-4.0.repo
-
+cp_systemctl
 yum install -y -q mongodb-org
 
 # ** Set up logrotate **
@@ -85,21 +87,21 @@ echo '/var/log/mongodb/mongod.log {
     endscript
 }
 ' > /etc/logrotate.d/mongodb
-
+cp_systemctl
 echob "** Starting MongoDB **"
 # /sbin/chkconfig mongod on
 systemctl enable mongod.service
 systemctl start mongod.service
-
+cp_systemctl
 
 
 echob "** Installing Redis **"
 yum install -y -q redis
-
+cp_systemctl
 echob "** Starting Redis **"
 systemctl enable redis.service
 systemctl start redis.service
-
+cp_systemctl
 
 
 echob "** Installing RabbitMQ **"
@@ -128,7 +130,7 @@ sslverify=1
 sslcacert=/etc/pki/tls/certs/ca-bundle.crt
 metadata_expire=300
 ' > /etc/yum.repos.d/rabbitmq_erlang.repo
-
+cp_systemctl
 yum install -y -q erlang
 
 # Install RabbitMQ
@@ -152,22 +154,22 @@ fi
 # Enable necessary plugins
 rabbitmq-plugins enable rabbitmq_management
 # rabbitmq-plugins enable rabbitmq_consistent_hash_exchange
-
+cp_systemctl
 echob "** Starting RabbitMQ **"
 systemctl enable rabbitmq-server
 systemctl start rabbitmq-server
-
+cp_systemctl
 # Get rabbitmqadmin tool (provided via local API by the management plugin)
 if ! [ -f /usr/bin/rabbitmqadmin ] ; then
   wget -q http://localhost:15672/cli/rabbitmqadmin -O /usr/bin/rabbitmqadmin
   chmod +x /usr/bin/rabbitmqadmin
 fi
 
-
+cp_systemctl
 echob "** Installing Supervisor **"
 pip -q install "supervisor==4.*"
 ln -s /usr/local/bin/supervisord /usr/bin/supervisord
 ln -s /usr/local/bin/supervisorctl /usr/bin/supervisorctl
 
-
+cp_systemctl
 echob "** All main dependencies installed **"

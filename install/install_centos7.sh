@@ -8,8 +8,8 @@ fi
 
 # == Parameters ==
 
-#install_nrpe=0   # client for external Nagios
-install_munin=1   # server and client for locally running Munin
+install_nrpe=0   # client for external Nagios
+# install_munin=1   # server and client for locally running Munin
 
 # == Common definitions ==
 
@@ -18,19 +18,21 @@ alias yum="yum --disableplugin=fastestmirror"
 
 # print notes (section header) in blue color
 echob () {
-  tput setaf 4 # light blue
-  tput bold
+  # tput setaf 4 # light blue
+  # tput bold
   echo "$@"
-  tput sgr0
+  # tput sgr0
 }
 
 # print important notes in yellow color
 echoy () {
-  tput setaf 3 # yellow
-  tput bold
+  # tput setaf 3 # yellow
+  # tput bold
   echo "$@"
-  tput sgr0
+  # tput sgr0
 }
+BASEDIR=$(dirname $0)
+. $BASEDIR/common.sh
 
 # ==========
 
@@ -43,8 +45,10 @@ sed -i --follow-symlinks -e 's/^SELINUX=.*$/SELINUX=disabled/' /etc/sysconfig/se
 
 echob "=============== Installing git (needed to clone repository) ==============="
 
-yum install -y -q git
-
+[[ $(type -t cp) == "alias" ]] && unalias cp
+cp_systemctl
+yum install -y -q git sudo deltarpm 
+cp_systemctl
 echob "=============== Cloning repository ==============="
 
 if ! [ -d /tmp/nerd_install ]; then
@@ -112,8 +116,13 @@ echoy ""
 #echoy "* Administrator/developer - use 'Devel. autologin' option"
 echoy "* Unprivileged local account - username/password: test/test"
 echoy ""
-
-
+# == Install and enable crond
+cp_systemctl
+yum install crontabs -y
+cp_systemctl
+systemctl enable crond
+systemctl start crond
+cp_systemctl
 # == Install and enable NRPE (for nagios) ==
 
 # TODO
@@ -136,3 +145,6 @@ echoy "      sudo systemctl start nerd-supervisor"
 echoy " 6. Manage backend via supervisord interface (supervisorctl or https://localhost:9100/)"
 echoy " 7. Check frontend at https://<this_server>/nerd/"
 echoy ""
+
+
+cp_systemctl

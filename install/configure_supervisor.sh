@@ -37,10 +37,10 @@ supervisorctl -c /etc/nerd/supervisord.conf $@' >/usr/bin/nerdctl
 chmod +x /usr/bin/nerdctl
 
 echob "** Set up supervisord systemd unit **"
-
+cp_systemctl
 cp $BASEDIR/nerd-supervisor.service /etc/systemd/system/nerd-supervisor.service
 systemctl daemon-reload
 #systemctl enable nerd-supervisor
 #systemctl restart nerd-supervisor
-
+cp_systemctl
 echoy "** TO RUN NERD, START ITS SUPERVISOR: systemctl start nerd-supervisor"
