@@ -57,8 +57,40 @@ tags_cfg_file = os.path.join(cfg_dir, config.get('tags_config'))
 config_tags = common.config.read_config(tags_cfg_file)
 
 # Read blacklists config (to separate dict)
-bl_cfg_file = os.path.join(cfg_dir, config.get('bl_config'))
-config_bl = common.config.read_config(bl_cfg_file)
+bl_cfg_file = os.path.join(cfg_dir, config.get('bl_config')) # secondary blacklists
+p_bl_cfg_file = os.path.join(cfg_dir, config.get('p_bl_config')) # primary blacklists
+dnsbl_cfg_file = os.path.join(cfg_dir, config.get('dnsbl')) # dnsbl blacklists (secondary)
+bl_config = common.config.read_config(bl_cfg_file)
+p_bl_config = common.config.read_config(p_bl_cfg_file)
+dnsbl_config = common.config.read_config(dnsbl_cfg_file)
+
+# Dict: blacklist_id -> parameters
+#  parameters should contain:
+#    all: id, name, descr, feed_type
+#    dnsbl-only: zone, reply
+#    others: url
+#    optional: provider_link, firehol_link
+blacklist_info = {}
+for feed_info in p_bl_config.get('iplists', []):
+    feed_info["feed_type"] = "primary"
+    blacklist_info[feed_info['id']] = feed_info
+for feed_info in bl_config.get('iplists', []):
+    feed_info["feed_type"] = "secondary"
+    blacklist_info[feed_info['id']] = feed_info
+for feed_info in bl_config.get('prefixiplists', []):
+    feed_info["feed_type"] = "secondary"
+    blacklist_info[feed_info['id']] = feed_info
+for feed_info in bl_config.get('domainlists', []):
+    feed_info["feed_type"] = "secondary (domain)"
+    blacklist_info[feed_info['id']] = feed_info
+for zone, replies in dnsbl_config.get('dnsbl', {}).items():
+    for reply, feed_info in replies.items():
+        feed_info["feed_type"] = "secondary (DNSBL)"
+        feed_info['descr'] = feed_info['descr'].replace("<br>", " ")
+        feed_info["zone"] = zone
+        feed_info["reply"] = reply
+        blacklist_info[feed_info['id']] = feed_info
+
 
 # Read EventCountLogger config (to separate dict) and initialize loggers
 ecl_cfg_filename = config.get('event_logging_config', None)
@@ -98,7 +130,7 @@ else:
     print("ERROR: unknown 'eventdb' configured, it will not be possible to show raw events in GUI", file=sys.stderr)
 
 try:
-    misp_inst = ExpandedPyMISP(config['misp']['url'], config['misp']['key'], None)
+    misp_inst = ExpandedPyMISP(config['misp']['url'], config['misp']['key'], ssl=config.get('misp.verify_cert', True))
 except KeyError:
     misp_inst = None # None means not configured
 except pymisp.exceptions.PyMISPError as e:
@@ -650,7 +682,8 @@ def account_info():
     else:
         if g.user['login_type'] == 'local':
             passwd_form = PasswordChangeForm()
-    
+
+    title = "Account information"
     return render_template('account_info.html', **locals())
 
 
@@ -683,19 +716,15 @@ def set_effective_groups():
 
 def get_ip_blacklists():
     # Get the list of all configured IP blacklists. Return array of (id, name).
-    # DNSBL (IP only)
-    blacklists = [(bl_name, bl_name) for bl_group in config.get('dnsbl.blacklists', []) for bl_name in bl_group[2].values()]
-    # Blacklists cached in Redis (IP and prefix)
-    blacklists += [(bl[0], bl[1]) for bl in config_bl.get('iplists', [])]
-    blacklists += [(bl[0], bl[1]) for bl in config_bl.get('prefixiplists', [])]
-    blacklists.sort()
-    return blacklists
+    ip_lists = [(id, info['name']) for id, info in blacklist_info.items() if info['feed_type'] != "secondary (domain)"]
+    ip_lists.sort()
+    return ip_lists
 
 def get_domain_blacklists():
     # Get the list of all configured domain blacklists. Return array of (id, name).
-    blacklists = [(bl[0], bl[1]) for bl in config_bl.get('domainlists', [])]
-    blacklists.sort()
-    return blacklists
+    dom_lists = [(id, info['name']) for id, info in blacklist_info.items() if info['feed_type'] == "secondary (domain)"]
+    dom_lists.sort()
+    return dom_lists
 
 def get_tags():
     """Get list of all configured tags (list of IDs and names)"""
@@ -935,7 +964,7 @@ def ips():
         if g.user and not g.ac('ipsearch'):
             flash('Insufficient permissions to search/view IPs.', 'error')
     
-    return render_template('ips.html', json=json, ctrydata=ctrydata, **locals())
+    return render_template('ips.html', json=json, ctrydata=ctrydata, blacklist_info=blacklist_info, **locals())
 
 
 @app.route('/_ips_count', methods=['POST'])
@@ -952,6 +981,23 @@ def ips_count():
         return make_response("ERROR")
 
 
+
+@app.route('/feed/<feedname>')
+def feed(feedname=None):
+    # Search for feedname in list of all (non-dnsbl) feeds
+    feed = blacklist_info.get(feedname)
+    if not feed:
+        return flask.abort(404)
+
+    name = feed['name']
+    description = feed['descr'].replace("<br>", " ")
+    firehol_link = feed.get('firehol_link', None)
+    provider_link = feed['provider_link']
+    feed_type = feed['feed_type']
+    url = feed.get('url', None)
+    # TODO use 'zone' and 'reply' od dnsbl lists
+
+    return render_template('feed.html', **locals())
 
 # ***** Detailed info about individual IP *****
 
@@ -998,7 +1044,7 @@ def ip(ipaddr=None):
     else:
         title = 'IP detail search'
         ipinfo = {}
-    return render_template('ip.html', ctrydata=ctrydata, ip=ipaddr, **locals())
+    return render_template('ip.html', ctrydata=ctrydata, ip=ipaddr, blacklist_info=blacklist_info, **locals())
 
 # Functions to asynchornously request creation of a new IP record
 # We use special endpoints, called by JavaScript, since that way we can easily disallow this functionality for robots
@@ -1010,19 +1056,23 @@ def ajax_request_ip_data(ipaddr):
     This cost 10 rate-limit tokens (9 are taken here since 1 is taken in @before_request)
     """
     log_ep.log('/ajax/fetch_ip_data')
+    if not g.ac('ipsearch'):
+        return make_response('ERROR: Insufficient permissions', 403)
     user_id = get_user_id()
     ok = rate_limiter.try_request(user_id, cost=9)
     if not ok:
         return exceeded_rate_limit(user_id)
 
     record_ttl = datetime.utcnow() + timedelta(hours=3)
-    task_queue_writer.put_task('ip', ipaddr, [('set', '_ttl.web', record_ttl)], priority=True)
+    task_queue_writer.put_task('ip', ipaddr, [('set', '_ttl.web', record_ttl)], "web", priority=True)
     return make_response("OK")
 
 
 @app.route('/ajax/is_ip_prepared/<ipaddr>')
 def ajax_is_ip_prepared(ipaddr):
     log_ep.log('/ajax/is_ip_prepared')
+    if not g.ac('ipsearch'):
+        return make_response('ERROR: Insufficient permissions')
     try:
         ipaddress.IPv4Address(ipaddr)
     except AddressValueError:
@@ -1042,10 +1092,10 @@ def ajax_ip_events(ipaddr):
     """Return events related to given IP (as HTML snippet to be loaded via AJAX)"""
     log_ep.log('/ajax/ip_events')
 
+    if not g.ac('ipsearch'):
+        return make_response('ERROR: Insufficient permissions', 403)
     if not ipaddr:
         return make_response('ERROR')
-    if not g.ac('ipsearch'):
-        return make_response('ERROR: Insufficient permissions')
 
     events = []
     error = None
@@ -1094,6 +1144,9 @@ def ajax_ip_events(ipaddr):
 @app.route('/misp_event/<event_id>')
 def misp_event(event_id=None):
     log_ep.log('/misp_event')
+    title = "MISP event detail"
+    if not g.ac('mispevent'):
+        return make_response('ERROR: Insufficient permissions', 403)
     if not misp_inst:
         return render_template("misp_event.html", error="Cannot connect to MISP instance")
     if not event_id:
@@ -1113,7 +1166,7 @@ def misp_event(event_id=None):
                 tlp = tag['name'][4:]
                 break
 
-        return render_template('misp_event.html', event=event, tlp=tlp)
+        return render_template('misp_event.html', title=title, event=event, tlp=tlp)
 
 
 # ***** Detailed info about individual AS *****
@@ -1231,6 +1284,9 @@ def bgppref(bgppref=None):
 @app.route('/status')
 def get_status():
     log_ep.log('/status')
+    if not g.ac("statusbox"):
+        log_err.log('403_unauthorized')
+        return make_response('ERROR: Insufficient permissions', 403)
     cnt_ip = mongo.db.ip.count()
     cnt_bgppref = mongo.db.bgppref.count()
     cnt_asn = mongo.db.asn.count()
@@ -1294,33 +1350,55 @@ def iplist():
 @app.route('/map/')
 def map_index():
     log_ep.log('/map')
+    if not g.ac("map"):
+        log_err.log('403_unauthorized')
+        return make_response('ERROR: Insufficient permissions', 403)
+    title = "IP map"
     ipvis_url = config.get("ipmap.url", None)
     ipvis_token = config.get("ipmap.token", None)
     return render_template("map.html", **locals())
 
 # ******************** Static/precomputed data ********************
 
-FILE_IP_REP = "/data/web_data/ip_rep.csv"
+#TODO: move to config
+DATA_DIR = "/data/web_data"
+# List of supported files - needed to get their size for data.html template
+# (also, it's safer to check client request against a fixed set of files, rather than to check for file existence,
+# handle attempts like "../../something" etc.)
+FILES = [
+    "ip_rep.csv",
+    "bad_ips.txt",
+    "bad_ips_med_conf.txt",
+]
 
 @app.route('/data/')
 def data_index():
     log_ep.log('/data')
+    if not g.ac("data"):
+        log_err.log('403_unauthorized')
+        return make_response('ERROR: Insufficient permissions', 403)
+    title = "Data"
+    file_sizes = {}
+    for f in FILES:
+        try:
+            file_sizes[f] = os.stat(os.path.join(DATA_DIR, f)).st_size
+        except OSError:
+            file_sizes[f] = None
+    return render_template("data.html", title=title, file_sizes=file_sizes)
+
+@app.route('/data/<filename>')
+def data_file(filename):
+    if not g.ac("data"):
+        log_err.log('403_unauthorized')
+        return make_response('ERROR: Insufficient permissions', 403)
+    if filename not in FILES:
+        return flask.abort(404)
+    log_ep.log('/data/' + filename.replace('.', '_')) # replace dots with underscores, dot in event name makes problems with Munin
     try:
-        ip_rep_file_size = os.stat(FILE_IP_REP).st_size
-    except OSError:
-        ip_rep_file_size = None
-    return render_template("data.html", **locals())
-
-@app.route('/data/ip_rep.csv')
-def data_ip_rep():
-    log_ep.log('/data/ip_rep_csv') # use _csv, not .csv, dot in event name makes problems with Munin
-    try:
-        return flask.send_file(FILE_IP_REP, mimetype="text/plain", as_attachment=True)
-    except OSError:
-        log_err.log('5xx_other')
-        return Response('ERROR: File not found on the server', 500, mimetype='text/plain')
-
-
+        return flask.send_file(os.path.join(DATA_DIR, filename), mimetype="text/plain", as_attachment=True)
+    except OSError as e:
+        print(f"data_file(): Can't access file '{os.path.join(DATA_DIR, filename)}'")
+        return flask.abort(404)
 
 
 # ****************************** API ******************************
@@ -1603,9 +1681,9 @@ def get_ip_fmp(ipaddr=None):
 @app.route('/api/v1/ip/<ipaddr>/test') # No query to database - for performance comparison
 def get_ip_rep_test(ipaddr=None):
     log_ep.log('/api/ip/test')
-    #if not g.ac('ipsearch'):
-    #    log_err.log('403_unauthorized')
-    #    return API_RESPONSE_403
+    if not g.ac('ipsearch'):
+        log_err.log('403_unauthorized')
+        return API_RESPONSE_403
 
     # Return simple JSON
     data = {

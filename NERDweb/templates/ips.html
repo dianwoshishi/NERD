@@ -101,6 +101,7 @@
   data-nodes="{{ip._evt_info.nodes}}" data-table="{{ip._evt_info.date_cat_table}}">
   <span>{{ip.events_meta.total if ip.events_meta else 0}}</span><span>{{ip._evt_info.n_nodes}}</span><span>{{ip._evt_info.n_cats}}</span>
   {% if ip._showable_misp_events %}<br><span class="misp">+ {{ ip._showable_misp_events }} MISP events</span>{% endif %}
+  {% if ip.otx_pulses %}<br><span class="otx">+ {{ ip.otx_pulses|length }} OTX pulses</span>{% endif %}
 </td>
 <td class="reputation" style="background-color: {{ rep_css_color(ip.rep) }}">
   {{ "%.3f"|format(ip.rep) if 'rep' in ip else "---" }}
@@ -166,16 +167,16 @@
   {% if ip.bl %}
   {% for bl_entry in ip.bl -%}
     {% if bl_entry.v %}
-      <span class="tag blacklist" title="IP is present on blacklist '{{ bl_entry.n }}'.<br>Last checked at: {{ bl_entry.t|datetime }}<br>Was present on blacklist at: {{bl_entry.h|map('datetime','%Y-%m-%d&nbsp;%H:%M')|join(', ')|truncate(200)|safe}}<br><br><i>Note: Description of blacklists not implemented yet, just google it.</i>">
-        {{-bl_entry.n-}}</span>
+      {% set bl_info = blacklist_info[bl_entry.n] or {"name": bl_entry.n} -%}
+      <a href="{{ url_for('feed', feedname=bl_entry.n) }}"><span class="tag blacklist" title="IP is present on blacklist '{{ bl_info.name }}'.<br>Last checked at: {{ bl_entry.t|datetime }}<br>Was present on blacklist at: {{bl_entry.h|map('datetime','%Y-%m-%d&nbsp;%H:%M')|join(', ')|truncate(200)|safe}}<br><br>Description: {{bl_info.descr}}<br>Type of feed: <b>{{bl_info.feed_type}}</b>">{{-bl_info.name-}}</span></a>
     {% endif %}
   {%- endfor %}
   {% endif %}
   {% if ip.dbl %}
   {% for bl_entry in ip.dbl -%}
     {% if bl_entry.v %}
-      <span class="tag blacklist" title="A domain name associated with the IP is present on blacklist '{{ bl_entry.n }}'.<br>Last checked at: {{ bl_entry.t|datetime }}<br>Was present on blacklist at: {{bl_entry.h|map('datetime','%Y-%m-%d&nbsp;%H:%M')|join(', ')|truncate(200)|safe}}<br><br><i>Note: Description of blacklists not implemented yet, just google it.</i>">
-        {{-bl_entry.n-}}</span>
+      {% set bl_info = blacklist_info[bl_entry.n] or {"name": bl_entry.n} -%}
+      <a href="{{ url_for('feed', feedname=bl_entry.n) }}"><span class="tag blacklist" title="A domain name associated with the IP is present on blacklist '{{ bl_info.n }}'.<br>Last checked at: {{ bl_entry.t|datetime }}<br>Was present on blacklist at: {{bl_entry.h|map('datetime','%Y-%m-%d&nbsp;%H:%M')|join(', ')|truncate(200)|safe}}<br><br>Description: {{bl_info.descr}}<br>Type of feed: <b>{{bl_info.feed_type}}</b>">{{-bl_info.name-}}</span></a>
     {% endif %}
   {%- endfor %}
   {% endif %}
@@ -186,8 +187,8 @@
     <div class="links-dropdown">
         <button class="links-dropbtn">&#x25BC;</button>
         <div class="links-dropdown-content">
-            <a href="https://www.shodan.io/search?query={{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='shodan_icon.png') }}"> &nbsp; Shodan</a>
-            <a href="https://censys.io/ipv4/{{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='censys_icon.png') }}"> &nbsp; Censys</a>
+            <a href="https://www.shodan.io/host/{{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='shodan_icon.png') }}"> &nbsp; Shodan</a>
+            <a href="https://search.censys.io/hosts/{{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='censys_icon.png') }}"> &nbsp; Censys</a>
             <a href="http://multirbl.valli.org/lookup/{{ ip._id }}.html" target="_blank"><img src="{{ url_for('static', filename='valli_icon.png') }}"> &nbsp; valli.org</a>
             <a href="#" onclick="$('#bl-check-form-ip').val('{{ip._id}}'); $('#bl-check-form').submit(); return false;"><img src="{{ url_for('static', filename='whatismyipaddress.png') }}"> &nbsp; whatismyipaddress.com</a>
             <a href="https://www.abuseipdb.com/check/{{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='abuse_ip_db_icon.png') }}"> &nbsp; AbuseIPDB</a>

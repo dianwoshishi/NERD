@@ -19,3 +19,4 @@ zmq
 amqpstorm==2.10.0
 jsonpath_rw
 jsonpath_rw_ext
+OTXv2
