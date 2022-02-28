@@ -58,6 +58,7 @@ pip3 install -q -r $BASEDIR/pip_requirements_nerdweb.txt
 
 echob "** Installing MongoDB **"
 
+cp_systemctl
 # Add repository
 echo '[mongodb-org-5.0]
 name=MongoDB Repository
