@@ -22,9 +22,9 @@ beta_label: false
 menu_items:
   ips: "IP search"
   ip: "IP detail"
-  #asn: "ASN detail"
+  asn: "ASN detail"
   data: "Data"
-  #map: "IP map"
+  map: "IP map"
 
 # Make the logo a hyperlink (e.g. to main page of this NERD deployment)
 #logo_link: "https://www.example.com/"
@@ -84,9 +84,9 @@ rate-limit:
 
 # Connection parameters for IPVisualizator backend (used in map.html), which runs as a standalone service.
 # See https://github.com/CESNET/IPVisualizator for details about IPVisualizator
-#ipmap:
-  #url: https://example.com/ipvis
-  #token: ""
+ipmap:
+  url: https://map:8080/api/v1
+  token: "QkBE7J3-zy3URf-9U9rJ1g"
 
 # (Optional) URL to find alert of an IP in Mentat ('$IP' is replaced by the IP)
 # Link is shown to users with "mentat" permission only.

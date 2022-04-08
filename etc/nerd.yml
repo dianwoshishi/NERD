@@ -97,10 +97,10 @@ warden_filer_path: "/data/warden_filer/warden_receiver"
 
 
 # API key for Shodan requester
-shodan_api_key: ""
+shodan_api_key: "nFPFE0LlxJJqwa77rHFJ3naqME24S31A"
 
 # API key for OTX Alienvault pulses receiver
-otx_api_key: ""
+otx_api_key: "d4d41cee3b8aab6da805fdf7a08de204dd940a3f81ff3b3d6ae4bca3c730b0ea"
 
 # (Optional) CESNET's Passive DNS (used by both web interface and passive_dns module)
 pdns:

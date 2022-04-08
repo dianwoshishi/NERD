@@ -1,0 +1,58 @@
+version: '3'
+services:
+  ipcenter:
+    image: nerd_v1.0
+    container_name: ipcenter
+    privileged: true
+    ports:
+      - 31080:80
+      - 39001:9001
+      - 35672:15672
+      - 25672:5672
+      - 37017:27017
+      - 36379:6379
+    networks:
+      - nets
+    volumes: 
+      - .:/tmp/nerd_install
+      - ./data/redis_data:/data
+      - ./data/logs:/logs
+      - ./data/mongo_data:/data/db
+      - ./data/logs:/var/log/rabbitmq #挂载 RabbitMQ日志
+      - ./data/rabbitmq_data:/var/lib/rabbitmq #挂载 RabbitMQ数据
+      - ./data/psql_data:/var/lib/postgresql/data
+      - ./data/logs:/var/log/nerd
+    links:
+      - map
+      - redis
+    depends_on:
+      - map
+      - redis
+
+  map:
+    container_name: map
+    build:
+      context: .
+      dockerfile: Dockerfile_ipvisual
+    restart: always
+    ports:
+      - 38080:80
+    networks:
+      - nets
+    links:
+      - redis
+    depends_on:
+      - redis
+
+  redis:
+    image: redis
+    container_name: redis_map
+    restart: always
+    ports:
+      - 26379:6379
+    networks:
+      - nets
+
+networks:
+  nets:
+    driver: bridge
