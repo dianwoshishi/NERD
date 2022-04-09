@@ -36,7 +36,7 @@ if ! [ -f /usr/lib/python3*/site-packages/warden_client.py -a -d /opt/warden_fil
   cp warden/warden_client/warden_client.py /usr/lib/python3*/site-packages/
   cp warden/warden_client/warden_client.py /usr/lib/python2*/site-packages/
   cp -r warden/warden_filer/ /opt/
-  rm -rf warden
+  #rm -rf warden
 fi
 
 echob "** Preparing directory structure for Warden filer receiver **"

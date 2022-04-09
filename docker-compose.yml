@@ -1,7 +1,8 @@
 version: '3'
 services:
   ipcenter:
-    image: nerd_v1.0
+    #image: nerd
+    image: nerd_v1.2
     container_name: ipcenter
     privileged: true
     ports:
@@ -15,13 +16,13 @@ services:
       - nets
     volumes: 
       - .:/tmp/nerd_install
-      - ./data/redis_data:/data
-      - ./data/logs:/logs
-      - ./data/mongo_data:/data/db
-      - ./data/logs:/var/log/rabbitmq #挂载 RabbitMQ日志
-      - ./data/rabbitmq_data:/var/lib/rabbitmq #挂载 RabbitMQ数据
-      - ./data/psql_data:/var/lib/postgresql/data
+      - ./data/redis:/var/lib/redis
+      - ./data/mongo:/var/lib/mongo
+      - ./data/rabbitmq:/var/lib/rabbitmq #挂载 RabbitMQ数据
+      - ./data/psql_data:/var/lib/pgsql
       - ./data/logs:/var/log/nerd
+      - ./data/nerd_data:/data
+      
     links:
       - map
       - redis

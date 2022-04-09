@@ -16,15 +16,15 @@ echob "** Creating NERD directories and setting up permissions **"
 # Note: "chown" and "chown" use -R flag for a case there already is something 
 # in the directories from a previous installation.
 
-# Code base (executables, scripts, etc.)
-mkdir -p /nerd
-chown -R nerd:nerd /nerd/
-chmod -R 775 /nerd
+## Code base (executables, scripts, etc.)
+#mkdir -p /nerd
+#chown -R nerd:nerd /nerd/
+#chmod -R 775 /nerd
 
-# Configuration directory
-mkdir -p /etc/nerd
-chown -R nerd:nerd /etc/nerd/
-chmod -R 775 /etc/nerd
+## Configuration directory
+#mkdir -p /etc/nerd
+#chown -R nerd:nerd /etc/nerd/
+#chmod -R 775 /etc/nerd
 
 # Log directory
 mkdir -p /var/log/nerd

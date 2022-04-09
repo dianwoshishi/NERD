@@ -137,6 +137,7 @@ yum install -y -q erlang
 # Install RabbitMQ
 if ! yum list installed rabbitmq-server >/dev/null 2>&1 ; then
   yum install -y -q https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.7.15/rabbitmq-server-3.7.15-1.el7.noarch.rpm
+  #yum install -y -q https://github.com/rabbitmq/rabbitmq-server/releases/download/v3.9.14/rabbitmq-server-3.9.14-1.el7.noarch.rpm
 fi
 
 # For some reason, hostname in Vagrant is often not set to anything meaningful,

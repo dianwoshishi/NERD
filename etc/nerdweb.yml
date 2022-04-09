@@ -7,7 +7,7 @@ acl_config: acl
 # Secret key used by Flask for various security purposes
 # Set this to an arbitrary long-enough string, use e.g.:
 # head -c 24 /dev/urandom | base64
-secret_key: "!!! CHANGE THIS !!!"
+secret_key: "UMe3c4Bajgc2p0nwnId8h9dUid7KgKMi"
 
 # URL of NERDweb root (without trailing slash, e.g. "/nerd")
 # All NERDweb pages are relative to this

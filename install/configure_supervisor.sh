@@ -15,7 +15,8 @@ fi
 echob "** Copying supervisor config files **"
 
 # Copy main configuration file
-cp $BASEDIR/supervisord.conf /etc/nerd/supervisord.conf
+#cp $BASEDIR/supervisord.conf /etc/nerd/supervisord.conf
+ln -s $BASEDIR/supervisord.conf /etc/nerd/supervisord.conf
 if [ $open_port = 1 ]; then
   # replace "localhost:9001" (which should be in the config file) by "*:9001"
   echor "WARNING: SUPERVISORD HTTP PORT IS OPEN ON ALL INTERFACES!"
@@ -24,7 +25,8 @@ fi
 
 # Copy files specifying individual NERD components running under Supervisor
 mkdir -p /etc/nerd/supervisord.conf.d/
-cp $BASEDIR/supervisord.conf.d/* /etc/nerd/supervisord.conf.d/
+#cp $BASEDIR/supervisord.conf.d/* /etc/nerd/supervisord.conf.d/
+ln -s $BASEDIR/supervisord.conf.d/* /etc/nerd/supervisord.conf.d/
 
 chown -R nerd:nerd /etc/nerd/supervisord.conf
 chown -R nerd:nerd /etc/nerd/supervisord.conf.d/
@@ -38,7 +40,8 @@ chmod +x /usr/bin/nerdctl
 
 echob "** Set up supervisord systemd unit **"
 cp_systemctl
-cp $BASEDIR/nerd-supervisor.service /etc/systemd/system/nerd-supervisor.service
+#cp $BASEDIR/nerd-supervisor.service /etc/systemd/system/nerd-supervisor.service
+ln -s $BASEDIR/nerd-supervisor.service /etc/systemd/system/nerd-supervisor.service
 systemctl daemon-reload
 #systemctl enable nerd-supervisor
 #systemctl restart nerd-supervisor

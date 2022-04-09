@@ -40,11 +40,11 @@ if [ "$debug" = 1 ] ; then
   echor "WARNING: SETTING UP DEBUG MODE!"
 fi
 
-cp_systemct
+cp_systemctl
 echob "** Installing Apache and WSGI **"
 yum install -q -y httpd httpd-devel mod_wsgi
 pip3 -q install mod_wsgi
-cp_systemct
+cp_systemctl
 
 # Replace the stock mod_wsgi.so with the one from Python36
 rm -f /usr/lib64/httpd/modules/mod_wsgi.so
@@ -57,9 +57,11 @@ fi
 
 echob "** Setting up configuration files **"
 if [ "$debug" = 1 ] ; then
-  cp $BASEDIR/httpd/nerd-debug.conf /etc/httpd/conf.d/nerd.conf
+  #cp $BASEDIR/httpd/nerd-debug.conf /etc/httpd/conf.d/nerd.conf
+  ln -s $BASEDIR/httpd/nerd-debug.conf /etc/httpd/conf.d/nerd.conf
 else
-  cp $BASEDIR/httpd/nerd.conf /etc/httpd/conf.d/nerd.conf
+  #cp $BASEDIR/httpd/nerd.conf /etc/httpd/conf.d/nerd.conf
+  ln -s $BASEDIR/httpd/nerd.conf /etc/httpd/conf.d/nerd.conf
 fi
 # Set up base loc in both apache conf and NERD conf
 sed -i -E "s|^Define\s+NERDBaseLoc\s+.*$|Define NERDBaseLoc $base_loc_httpd|" /etc/httpd/conf.d/nerd.conf

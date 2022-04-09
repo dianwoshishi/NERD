@@ -8,7 +8,8 @@ echob "=============== Configure cron ==============="
 
 echob "** Copying cron config file **"
 
-cp $BASEDIR/cron/nerd /etc/cron.d/nerd
+#cp $BASEDIR/cron/nerd /etc/cron.d/nerd
+ln -s $BASEDIR/cron/nerd /etc/cron.d/nerd
 
 # if Warden events are stored to local PSQL DB, enable DB cleaning script
 if psql -U nerd -lqt | grep -qw nerd_warden

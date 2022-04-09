@@ -18,7 +18,8 @@ yum -y -q install munin munin-node
 sed -i -e 's/^host \*$/# host \*/' -e 's/^#\s*host 127.0.0.1/host 127.0.0.1/' /etc/munin/munin-node.conf
 
 # Install and enable NERD plugins
-cp $BASEDIR/munin/* /usr/share/munin/plugins/
+#cp $BASEDIR/munin/* /usr/share/munin/plugins/
+ln -s $BASEDIR/munin/* /usr/share/munin/plugins/
 chmod +x /usr/share/munin/plugins/nerd_*
 ln -s /usr/share/munin/plugins/nerd_* /etc/munin/plugins/
 # except nerd_mongo_rs, since Mongo Replica-set is not configured by default - remove the symlink to disable plugin
@@ -40,7 +41,8 @@ cp_systemctl
 
 # ** Enable web access **
 # Copy prepared config file for Apache
-cp $BASEDIR/httpd/munin.conf /etc/httpd/conf.d/munin.conf
+#cp $BASEDIR/httpd/munin.conf /etc/httpd/conf.d/munin.conf
+ln -s $BASEDIR/httpd/munin.conf /etc/httpd/conf.d/munin.conf
 
 touch /etc/munin/munin-htpasswd
 cp_systemctl

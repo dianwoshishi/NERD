@@ -67,16 +67,32 @@ chmod +x /tmp/nerd_install/install/*.sh
 
 
 # Copy files into final locations
-sudo -u nerd mkdir -p /nerd/{common,NERDd,NERDweb,scripts}
-sudo -u nerd cp -R /tmp/nerd_install/common/* /nerd/common
-sudo -u nerd cp -R /tmp/nerd_install/NERDd/* /nerd/NERDd
-sudo -u nerd cp -R /tmp/nerd_install/NERDweb/* /nerd/NERDweb
-sudo -u nerd cp -R /tmp/nerd_install/scripts/* /nerd/scripts
-sudo -u nerd cp -R /tmp/nerd_install/etc/* /etc/nerd
-chmod -R g+w /nerd/
-chmod -R g+w /etc/nerd/
-chmod +x /nerd/scripts/*.sh
+#sudo -u nerd mkdir -p /nerd/{common,NERDd,NERDweb,scripts}
+#sudo -u nerd cp -R /tmp/nerd_install/common/* /nerd/common
+#sudo -u nerd cp -R /tmp/nerd_install/NERDd/* /nerd/NERDd
+#sudo -u nerd cp -R /tmp/nerd_install/NERDweb/* /nerd/NERDweb
+#sudo -u nerd cp -R /tmp/nerd_install/scripts/* /nerd/scripts
+#sudo -u nerd cp -R /tmp/nerd_install/etc/* /etc/nerd
+#chmod -R g+w /nerd/
+#chmod -R g+w /etc/nerd/
+#chmod +x /nerd/scripts/*.sh
 
+# Code base (executables, scripts, etc.)
+rm -rf /nerd
+mkdir -p /nerd
+chown -R nerd:nerd /nerd/
+chmod -R 775 /nerd
+
+rm -rf /etc/nerd
+
+ln -s /tmp/nerd_install/common /nerd/common
+ln -s /tmp/nerd_install/NERDd /nerd/NERDd
+ln -s /tmp/nerd_install/NERDweb /nerd/NERDweb
+ln -s /tmp/nerd_install/scripts /nerd/scripts
+ln -s /tmp/nerd_install/etc /etc/nerd
+chmod -R g+w /nerd/
+#chmod -R g+w /etc/nerd/
+chmod +x /nerd/scripts/*.sh
 
 # Install and configure all dependencies
 /tmp/nerd_install/install/install_basic_dependencies.sh
