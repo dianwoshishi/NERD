@@ -164,10 +164,11 @@ def process_pulses(pulses):
             if (indicator["type"] == "IPv4") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
                 ipv4_counter += 1
                 upsert_new_pulse(pulse, indicator)
-            if (indicator["type"] == "IPv6") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
-                ipv6_counter += 1
-                upsert_new_pulse(pulse, indicator)
-        logger.info("{}/{} done, pulse {}, {} IPv4 indicators && {} IPv6 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter, ipv6_counter))
+            # if (indicator["type"] == "IPv6") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
+            #     ipv6_counter += 1
+            #     upsert_new_pulse(pulse, indicator)
+        # logger.info("{}/{} done, pulse {}, {} IPv4 indicators && {} IPv6 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter, ipv6_counter))
+        logger.info("{}/{} done, pulse {}, {} IPv4 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter))
 
 
 def get_new_pulses():

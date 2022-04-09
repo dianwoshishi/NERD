@@ -14,7 +14,6 @@ from datetime import datetime
 import time
 from collections import deque, Iterable, OrderedDict, Counter
 import logging
-from collections import defaultdict
 
 import g
 import core.scheduler
@@ -104,14 +103,17 @@ def perform_update(rec, updreq):
             rec = rec[int(first_key)]
         else: # key of object/dict
             if first_key not in rec:
-                rec[first_key] = defaultdict(list)
+                rec[first_key] = {}
             rec = rec[first_key]
     
     if op == 'set':
         rec[key] = updreq[2]
     
     elif op == 'append':
-        rec[key].append(updreq[2])
+        if key not in rec:
+            rec[key] = [updreq[2]]
+        else:
+            rec[key].append(updreq[2])
 
     elif op == 'add_to_set':
         value = updreq[2]
@@ -265,14 +267,14 @@ class UpdateManager:
         # Mapping of names of attributes to a list of functions that should be 
         # called when the attribute is updated
         # (One such mapping for each entity type)
-        self._attr2func = {etype: defaultdict(dict) for etype in ENTITY_TYPES}
+        self._attr2func = {etype: {} for etype in ENTITY_TYPES}
         
         # Set of attributes that may be updated by a function
-        self._func2attr = {etype: defaultdict(dict) for etype in ENTITY_TYPES}
+        self._func2attr = {etype: {} for etype in ENTITY_TYPES}
 
         # Mapping of functions to set of attributes the function watches, i.e.
         # is called when the attribute is changed
-        self._func_triggers = {etype: defaultdict(dict) for etype in ENTITY_TYPES}
+        self._func_triggers = {etype: {} for etype in ENTITY_TYPES}
         
         # List of worker threads for processing the update requests
         self._worker_threads = []
@@ -335,7 +337,10 @@ class UpdateManager:
         self._func2attr[etype][func] = tuple(changes) if changes is not None else ()
         self._func_triggers[etype][func] = set(triggers)
         for attr in triggers:
-            self._attr2func[etype][attr].append(func)
+            if attr in self._attr2func[etype]:
+                self._attr2func[etype][attr].append(func)
+            else:
+                self._attr2func[etype][attr] = [func]
 
 
     def update(self, ekey, update_requests): # TODO: rename to "request update"
@@ -766,5 +771,4 @@ class UpdateManager:
         for name, t in self.t_handlers.most_common(10):
             print("{:50s} {:7.3f}".format(name, t))
         self.t_handlers = Counter()
-
 
