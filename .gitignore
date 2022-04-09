@@ -10,3 +10,5 @@ alerts_1000/
 
 data/
 etc/htpasswd
+./etc/*
+./install/*
