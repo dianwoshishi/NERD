@@ -1,1 +1,0 @@
-/tmp/nerd_install/install/supervisord.conf.d

@@ -74,7 +74,7 @@ redis.servic
 ### log
 
 location in `/var/log/nerd/*`
-you can simplely found them by acceess http://localhost:9001 in your container.
+you can simplely found them by access http://localhost:9001 in your container.
 
 ### Finally
 

@@ -11,3 +11,4 @@ redis
 hiredis
 cachetools
 event_count_logger
+IPy

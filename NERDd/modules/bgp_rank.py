@@ -73,6 +73,7 @@ class CIRCL_BGPRank(NERDModule):
             # empty asn_description, rank equal to 0.0 and position is None
             rank = reply['response']['ranking']['rank']
             pos = reply['response']['ranking']['position']
+            total_know_anss = reply['respone']['ranking']['total_known_asns']
             if not reply['response']['asn_description'] and rank == 0.0 and pos is None:
                 self.log.info("ASN {} not found in BGP ranking database".format(key))
             self.log.debug("Setting BGPRank of ASN {} to {}".format(key, rank))

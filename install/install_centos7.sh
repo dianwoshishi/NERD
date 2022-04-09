@@ -165,5 +165,7 @@ echoy ""
 
 cp_systemctl
 ##  if you want to start nerd , run this below:
-# sudo systemctl enable nerd-supervisor
-# sudo systemctl start nerd-supervisor
+sudo systemctl enable nerd-supervisor
+sudo systemctl start nerd-supervisor
+
+/nerd/scripts/download_maxmind_geolite.sh SXe1ywZDRnQqLfvw

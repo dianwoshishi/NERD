@@ -15,7 +15,7 @@ echob "** Copying CAIDA AS-type mapping file **"
 # Copy caida file (if present)
 if ! [ -f /data/caida-as2types.txt ]; then
   # TODO: the data seem to be updated every month, download the latest one automatically (and write an update script)
-  wget -q http://data.caida.org/datasets/as-classification/20200701.as2types.txt.gz -O /data/caida-as2types.txt.gz
+  wget -q https://publicdata.caida.org/datasets/as-classification_restricted/20210401.as2types.txt.gz -O /data/caida-as2types.txt.gz
   gunzip -f /data/caida-as2types.txt.gz
 fi
 

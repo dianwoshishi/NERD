@@ -2,7 +2,7 @@
 
 # Each handler function should have the following prototype:
 #
-# def <name>(self, ekey, rec, updates):
+# def <name>(self, ekey, record, updates):
 #
 # Arguments:
 # ekey -- two-tuple of entity type and key, e.g. ('ip', '192.0.2.42')
