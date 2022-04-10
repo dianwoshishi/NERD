@@ -34,4 +34,10 @@ if ! [ -f /data/asdb.csv]; then
     wget -q --no-check-certificate "https://asdb.stanford.edu/data/ases.csv" -O asdb.csv
     cd -
 fi
+if ! [ -f /data/cloudips.csv]; then
+    echo "Downloading and processing cloudips from Dshield"
+    cd /data/
+    wget -q --no-check-certificate "://asdb.stanford.edu/data/ases.cs://isc.sans.edu/api/cloudips\?csv" -O cloudips.csv
+    cd -
+fi
 EOF
