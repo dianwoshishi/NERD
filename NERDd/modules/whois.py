@@ -20,6 +20,7 @@ from dns import resolver
 from dns.exception import *
 
 from collections import defaultdict
+import IPy
 
 class WhoIS(NERDModule):
     """
@@ -83,10 +84,12 @@ class WhoIS(NERDModule):
         asnFile = g.config.get("whois.asn_file", "/tmp/nerd-whois-asn.csv")
         ipv4File = g.config.get("whois.ipv4_file", "/tmp/nerd-whois-ipv4.csv")
         asdbFile = g.config.get("whois.asdb_file", "/tmp/asdb.csv")
+        cloudipsFile = g.config.get("whois.cloudips_file", "/tmp/cloudips.csv")
         try:
             self.asn_array = self.loadASN(asnFile)
             self.ipv4_array = self.loadIPv4(ipv4File)
             self.asdb_dict= self.loadASdb(asdbFile)
+            self.cloudips_dict= self.loadCloudips(cloudipsFile)
         except OSError as e:
             self.log.error(str(e) + ' -> Unable to start the WhoIS module.')
             return
@@ -179,6 +182,17 @@ class WhoIS(NERDModule):
             data[1].append(row[1])
 
         return data
+
+    def loadCloudips(self, cloudipsFile):
+        self.log.info('Loading information about cloudips from file: {}.'.format(cloudipsFile))
+        cloudips_dict = defaultdict()
+        with open(cloudipsFile, "r") as f:
+            for line in f:
+                ip, netmask, provider, comment  = line.strip().split(",")
+                ip_int = IPy.IP(ip).int()
+                ipcidr = IPy.IP("{}/{}".format(ip, netmask))
+                cloudips_dict[ipcidr] = [ip, netmask,  provider, comment]
+        return cloudips_dict
 
     def loadASdb(self, asdbFile):
         self.log.info('Loading information about ASdb from file: {}.'.format(asdbFile))
@@ -315,6 +329,11 @@ class WhoIS(NERDModule):
             actions.append(('event', '!DELETE'))
 
         return actions
+    def check_cloudips(self, ip):
+        for item in self.cloudips_dict.keys():
+            if ip in item:
+                return self.cloudips_dict[item]
+        return []
 
     def getIPInfo(self, ekey, rec, updates):
         etype, ip = ekey
@@ -323,6 +342,11 @@ class WhoIS(NERDModule):
 
         actions = []
         cymru_ok = False
+
+        #check cloudips
+        cloudips = self.check_cloudips(ip)
+        if cloudips != []:
+            actions.append(('set', 'cloudips', cloudips))
 
         # ** BGP prefixes and ASNs **
         # Perform query to whois.cymru.com server to get BGP prefix and list of ASNs

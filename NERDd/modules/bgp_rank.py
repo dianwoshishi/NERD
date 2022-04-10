@@ -10,6 +10,8 @@ import g
 import logging
 import requests
 
+from fake_useragent import UserAgent
+
 BASE_URL = "https://bgpranking-ng.circl.lu/"
 QUERY_URL = BASE_URL + "json/asn"
 
@@ -22,13 +24,12 @@ class CIRCL_BGPRank(NERDModule):
 
     def __init__(self):
         self.log = logging.getLogger('CIRCL_BGPRank')
-        self.log.setLevel("DEBUG")
-        self.requests_session = requests.session()
+        #self.log.setLevel("DEBUG")
         g.um.register_handler(
             self.set_bgprank,  # function (or bound method) to call
             'asn',                # entity type
             ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
-            ('circl_bgprank',)    # tuple/list/set of attributes the method may change
+            ('circl_bgprank','asn_description',)    # tuple/list/set of attributes the method may change
         )
 
     def set_bgprank(self, ekey, rec, updates):
@@ -55,8 +56,11 @@ class CIRCL_BGPRank(NERDModule):
             return None
 
         #query = json.dumps({'asn': key, 'address_family': 'v4'})
-        query = '{"asn": ' + str(key) + ', "address_family": "v4"}'
+        # query = '{"asn": ' + str(key) + ', "address_family": "v4"}'
+        query = '{"asn":' + str(key) + '}'
         try:
+            self.requests_session = requests.session()
+            headers= {'User-Agent':str(UserAgent().random)}
             # the return format is:
             # {'meta': {'asn': integer, 'address_family': 'v4'},
             #  'response': {'asn_description': 'xxx',
@@ -66,19 +70,24 @@ class CIRCL_BGPRank(NERDModule):
             #                          }
             #              }
             # }
-            reply = self.requests_session.post(QUERY_URL, data=query, timeout=(1,3))
+            reply = self.requests_session.post(QUERY_URL, headers=headers, data=query, timeout=(3,3))
             reply = reply.json()
 
             # when ASN is not found (or request is completely wrong), server returns the same response format with
             # empty asn_description, rank equal to 0.0 and position is None
+            asn_description = reply['response']['asn_description']
             rank = reply['response']['ranking']['rank']
             pos = reply['response']['ranking']['position']
-            total_know_anss = reply['respone']['ranking']['total_known_asns']
+            total_know_anss = reply['response']['ranking']['total_known_asns']
             if not reply['response']['asn_description'] and rank == 0.0 and pos is None:
                 self.log.info("ASN {} not found in BGP ranking database".format(key))
             self.log.debug("Setting BGPRank of ASN {} to {}".format(key, rank))
         except Exception as e:
-            self.log.error("Can't get BGPRank of ASN {}: {}".format(key, str(e)))
+            self.log.error("Can't get BGPRank of ASN {}: {}:{}".format(query, headers, e))
             return None             # could be connection error etc.
-
-        return [('set', 'circl_bgprank', rank)]
+        
+        return [('set', 'circl_bgprank', rank),('set', 'asn_description', asn_description) ]
+if __name__ == '__main__':
+    bgprank = CIRCL_BGPRank()
+    ret = bgprank.set_bgprank((asn, 4538), [], [])
+    print(ret)
