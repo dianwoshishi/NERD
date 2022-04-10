@@ -174,8 +174,9 @@ tags:
   cloudips:
     name: CloudIP
     description: "IP is in DShield CloudIP database"
-    tag_color: "#25671F"
+    tag_color: "#48D1CC"
     condition: "cloudips"
+    info: "this ip with was in cloudIPs {cloudips}"
 
   misp_tlp_white:
     name: MISP (tlp:white)

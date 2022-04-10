@@ -346,7 +346,7 @@ class WhoIS(NERDModule):
         #check cloudips
         cloudips = self.check_cloudips(ip)
         if cloudips != []:
-            actions.append(('set', 'tags.cloudips', cloudips))
+            actions.append(('set', 'cloudips', cloudips))
 
         # ** BGP prefixes and ASNs **
         # Perform query to whois.cymru.com server to get BGP prefix and list of ASNs

@@ -17,6 +17,7 @@ import requests
 import logging
 import json
 
+from fake_useragent import UserAgent
 
 BASE_URL = "https://isc.sans.edu/api"
 
@@ -43,6 +44,7 @@ class DShield(NERDModule):
             ('dshield.reports',
              'dshield.targets',
              'dshield.mindate',
+             'dshield.updated',
              'dshield.maxdate')    # tuple/list/set of attributes the method may change
         )
 
@@ -57,8 +59,9 @@ class DShield(NERDModule):
             return None
 
         try:
+            headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=5, headers={'user-agent': self.user_agent})
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(3,3), headers=headers)
             #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
@@ -69,6 +72,7 @@ class DShield(NERDModule):
                 'reports': 0,
                 'targets': 0,
                 'mindate': "",
+                'updated': "",
                 'maxdate': "",
             }
 
@@ -81,10 +85,11 @@ class DShield(NERDModule):
                 dshield_record['mindate'] = data['mindate']
             if data['maxdate']:
                 dshield_record['maxdate'] = data['maxdate']
+            if data['updated']:
+                dshield_record['updated'] = data['updated']
 
             # if some value is missing, DShield have no data for the IP (or the record is damaged), do not store
-            if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and
-                    dshield_record['maxdate']):
+            if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and dshield_record['maxdate'] and dshield_record['updated'] ):
                 self.log.debug(f"No data in DShield for IP {key}")
                 return None
 
