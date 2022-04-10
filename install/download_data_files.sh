@@ -28,4 +28,10 @@ if ! [ -f /data/nerd-whois-asn.csv -a -f /data/nerd-whois-ipv4.csv ]; then
     cd -
 fi
 
+if ! [ -f /data/asdb.csv]; then
+    echo "Downloading and processing asdb data"
+    cd /data/
+    wget -q --no-check-certificate "https://asdb.stanford.edu/data/ases.csv" -O asdb.csv
+    cd -
+fi
 EOF

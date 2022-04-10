@@ -47,6 +47,7 @@ warden_filter:
 whois:
   asn_file: "/data/nerd-whois-asn.csv"
   ipv4_file: "/data/nerd-whois-ipv4.csv"
+  asdb_file: "/data/asdb.csv"
 
 # Event type counter module determines which types of attacks exceed threshold during given time period
 event_type_counter:

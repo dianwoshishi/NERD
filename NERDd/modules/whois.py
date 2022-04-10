@@ -19,6 +19,8 @@ import ipaddress
 from dns import resolver
 from dns.exception import *
 
+from collections import defaultdict
+
 class WhoIS(NERDModule):
     """
     WhoIS module.
@@ -80,9 +82,11 @@ class WhoIS(NERDModule):
         self.log = logging.getLogger("WhoISmodule")
         asnFile = g.config.get("whois.asn_file", "/tmp/nerd-whois-asn.csv")
         ipv4File = g.config.get("whois.ipv4_file", "/tmp/nerd-whois-ipv4.csv")
+        asdbFile = g.config.get("whois.asdb_file", "/tmp/asdb.csv")
         try:
             self.asn_array = self.loadASN(asnFile)
             self.ipv4_array = self.loadIPv4(ipv4File)
+            self.asdb_dict= self.loadASdb(asdbFile)
         except OSError as e:
             self.log.error(str(e) + ' -> Unable to start the WhoIS module.')
             return
@@ -104,7 +108,7 @@ class WhoIS(NERDModule):
             self.getASNInfo,
             'asn',
             ('!NEW',),
-            ('name', 'rep', 'rir', 'org')
+            ('name', 'rep', 'rir', 'org', 'category')
         )
 
         g.um.register_handler(
@@ -175,6 +179,20 @@ class WhoIS(NERDModule):
             data[1].append(row[1])
 
         return data
+
+    def loadASdb(self, asdbFile):
+        self.log.info('Loading information about ASdb from file: {}.'.format(asdbFile))
+        asn_dict = defaultdict()
+        with open(asdbFile, "r") as f:
+            for line in f:
+                line = line.strip().split(',"')
+                asn = line[0]
+                if asn == "ASN":
+                    continue
+                categories = line[1:]
+                cat	= [(cat_subcat[0].strip('"'), cat_subcat[1].strip('"')) for cat_subcat in zip(categories[0::2], categories[1::2])]
+                asn_dict[asn[2:]] = cat
+        return asn_dict
 
     def loadIPv4(self, ipv4File):
         self.log.info('Loading information about IP blocks allocation from file: {}.'.format(ipv4File))
@@ -395,6 +413,12 @@ class WhoIS(NERDModule):
         data_dict = {}
         actions = []
         actions.append(('set', 'rep', 0))
+	# add as categories from asdb
+        try:
+            actions.append(('set', 'category', self.asdb_dict[str(asn)]))
+        except:
+            self.log.error("Unable to find ASN:{} in asdb".format(asn))
+
         if reserved:
             actions.append(('set', 'rir', ('Reserved:' + rir) if rir else 'none'))
         else:
@@ -438,7 +462,6 @@ class WhoIS(NERDModule):
                 actions.append(('set', key, rir + ':' + data_dict[key]))
             else:
                 actions.append(('set', key, data_dict[key]))
-
         return actions
 
     def getBlockInfo(self, ekey, rec, updates):

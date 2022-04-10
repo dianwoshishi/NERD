@@ -253,7 +253,10 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
  {% elif attr == "asns" %}
   <dt>Origin AS</dt>
   {% for asinfo in val %}
-   <dd><a href="{{ url_for('asn') + asinfo._id|string }}">AS{{ asinfo._id }}</a> - {{ asinfo.name }}</dd>
+   <dt><a href="{{ url_for('asn') + asinfo._id|string }}">AS{{ asinfo._id }}</a> - {{ asinfo.name }}</dt>
+    {% for cat in asinfo.category %}
+        <dd><b>category:</b> {{ cat[0]}} - <b>subcategory:</b> {{cat[1]}}</dd>
+    {% endfor %}
   {% endfor %}
  {% elif attr == "ipblock" %}
   <dt>Address block ('inetnum' or 'NetRange' in whois database)</dt>
