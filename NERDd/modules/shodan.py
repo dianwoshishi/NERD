@@ -8,6 +8,7 @@ Requirements:
 from core.basemodule import NERDModule
 import g
 
+import time
 import logging
 import threading
 import shodan
@@ -42,7 +43,7 @@ class Shodan(NERDModule):
         self.errors = 0 # Number of API errors that has occurred
         self.enabled = True
         
-        self.apikey = g.config.get('shodan.apikey', None)
+        self.apikey = g.config.get('shodan_api_key', None)
         if not self.apikey:
             self.log.warning("No API key set, Shodan module disabled.")
             return
@@ -106,9 +107,10 @@ class Shodan(NERDModule):
             else:
                 self.log.error("Error when querying '{}': {}".format(ip, str(e)))
                 self.errors += 1
-                if self.errors > 10:
-                    self.log.critical("More than 10 API errors -> stopping module".format(ip, str(e)))
-                    self.enabled = False
+                time.sleep(1)
+                if self.errors % 10 == 0:
+                    self.log.critical("More than 10 API errors -> stopping module{}{}{}".format(ip, str(e), self.errors))
+                    #self.enabled = False
             return None
         
         self.log.debug("Shodan info for {}: {}".format(ip, data))

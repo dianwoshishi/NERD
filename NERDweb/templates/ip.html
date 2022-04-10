@@ -249,6 +249,28 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
  {% elif attr == "hostname" %}
   <dt>hostname</dt>
   <dd>{{ val|reverse if val else '(null)'}}</dd>
+ {% elif attr == "otx" %}
+    {% if val.relate_pulses%}
+      <dt> OTX related pulses </dt>
+      <dd class="scrollable">
+        {% for otx_pulse in val.relate_pulses %}
+        <div><b>[<a href="https://otx.alienvault.com/pulse/{{otx_pulse.id}}">{{ otx_pulse.id}}</a>] {{ otx_pulse.created}} | {{ otx_pulse.name}}</b>
+             <table style="padding-left: 30px; padding-bottom: 10px">
+              <tr><td>Description:</td><td>{{ otx_pulse.description }}</td></tr>
+              <tr><td>Modified:</td><td>{{ otx_pulse.modified}}</td></tr>
+              <tr><td>Subscriber_count:</td><td>{{ otx_pulse.subscriber_count}}</td></tr>
+              <tr>    
+                  <span class="tag">
+                   {% for tag in otx_pulse.tags %}<span class="tag" title="tag {{tag}} marked by OTX">{{tag}}</span>{% endfor %}
+                   </span>
+              </tr>
+              <tr>    
+                 <td>Indicator_type_counts:</td><td>{{ otx_pulse.indicator_type_counts }}</td>              </tr>
+             </table>
+        </div>
+        {% endfor%}
+      </dd>
+    {% endif %}
 
  {% elif attr == "asns" %}
   <dt>Origin AS</dt>

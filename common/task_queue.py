@@ -213,7 +213,7 @@ class TaskQueueWriter(RobustAMQPConnection):
             'src': src
         }
         body = json.dumps(msg, default=conv_to_json).encode('utf8')
-        key = etype + ':' + str(eid)
+        key = etype + ':' + str(eid) 
         routing_key = HASH(key) % self.workers  # index of the worker to send the task to
 
         exchange = self.exchange_pri if priority else self.exchange
