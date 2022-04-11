@@ -32,7 +32,7 @@ import signal
 from OTXv2 import OTXv2
 
 # Set modified_since to this number of days if otx_last_update.txt is not present.
-MAX_DATA_AGE_ON_FIRST_RUN = 180
+MAX_DATA_AGE_ON_FIRST_RUN = 90
 
 # Add to path the "one directory above the current file location" to find modules from "common"
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))

@@ -16,7 +16,7 @@ from OTXv2 import OTXv2
 from common.otx_utils import ip
 
 
-otx_api_lock = threading.Lock()
+#otx_api_lock = threading.Lock()
 
 OTX_SERVER = 'https://otx.alienvault.com/'
 class OTX(NERDModule):
@@ -51,8 +51,8 @@ class OTX(NERDModule):
         self.log.debug("Querying OTX for {}".format(key))
         relate_pulses = []
         try:
-            with otx_api_lock:
-                relate_pulses= ip(self.otx, key)
+#            with otx_api_lock:
+            relate_pulses= ip(self.otx, key)
         except Exception as e:
             self.log.error("Error occured in OTX {}".format(e))
             return None

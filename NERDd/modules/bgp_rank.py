@@ -70,7 +70,7 @@ class CIRCL_BGPRank(NERDModule):
             #                          }
             #              }
             # }
-            reply = self.requests_session.post(QUERY_URL, headers=headers, data=query, timeout=(3,3))
+            reply = self.requests_session.post(QUERY_URL, headers=headers, data=query, timeout=(1,1))
             reply = reply.json()
 
             # when ASN is not found (or request is completely wrong), server returns the same response format with

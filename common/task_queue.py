@@ -56,8 +56,8 @@ DEFAULT_QUEUE = 'nerd-worker-{}'
 DEFAULT_PRIORITY_QUEUE = 'nerd-worker-{}-pri'
 
 # Hash function used to distribute tasks to worker processes. Takes string, returns int.
-# (last 4 bytes of MD5)
-HASH = lambda x: int(hashlib.md5(x.encode('utf8')).hexdigest()[-4:], 16)
+# (last 4 bytes of SHA1)
+HASH = lambda x: int(hashlib.sha1(x.encode('utf8')).hexdigest()[-4:], 16)
 
 # Maximum number of pending messages per worker process (TODO maybe increase)
 # MAX_QUEUE_LENGTH = 100 # Should be defined externally
@@ -214,7 +214,7 @@ class TaskQueueWriter(RobustAMQPConnection):
         }
         body = json.dumps(msg, default=conv_to_json).encode('utf8')
         key = etype + ':' + str(eid) 
-        routing_key = HASH(key) % self.workers  # index of the worker to send the task to
+        routing_key = HASH(str(HASH(key))) % self.workers  # index of the worker to send the task to
 
         exchange = self.exchange_pri if priority else self.exchange
 
