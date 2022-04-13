@@ -26,6 +26,7 @@ from event_count_logger import EventCountLogger, EventGroup, DummyEventGroup
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
 import common.config
 import common.task_queue
+import common.StatsRIPE
 from common.utils import ipstr2int, int2ipstr, parse_rfc_time
 from shodan_rpc_client import ShodanRpcClient
 
@@ -116,6 +117,8 @@ num_processes = config.get('worker_processes')
 task_queue_writer = common.task_queue.TaskQueueWriter(num_processes, rabbit_config)
 task_queue_writer.connect()
 
+# Init Ripeclient
+ripe_client = common.StatsRIPE.StatsRIPE()
 
 # Create event database driver (according to config)
 EVENTDB_TYPE = config.get('eventdb', 'psql')
@@ -1015,10 +1018,13 @@ def ip(ipaddr=None):
     else:
         flash('Invalid IPv4 address', 'error')
         ipaddr = None
-
     if ipaddr:
         if g.ac('ipsearch'):
             title = ipaddr
+            
+            ip_search_info = ripe_client.Search(ipaddr)['data']
+            ip_reverse_dns = ripe_client.Reverse_DNS_IP(ipaddr)['data']
+
             ipnum = ipstr2int(ipaddr)
             ipinfo = mongo.db.ip.find_one({'_id': ipnum})
             
@@ -1193,6 +1199,8 @@ def asn(asn=None): # Can't be named "as" since it's a Python keyword
         asn = int(asn.lstrip("ASas")) # strip AS at the beginning
         if g.ac('assearch'):
             title = 'AS'+str(asn)
+
+            asn_search_info = ripe_client.Search(title)['data']
             rec = mongo.db.asn.find_one({'_id':asn})
         else:
             flash('Insufficient permissions to search/view ASNs.', 'error')
@@ -1269,6 +1277,8 @@ def bgppref(bgppref=None):
 
     if g.ac('bgpprefsearch'):
         title = bgppref
+        # prefix info
+        prefix_info = ripe_client.prefix_overview(bgppref)['data']
         rec = mongo.db.bgppref.find_one({'_id': bgppref})
         if rec is not None:
             cursor = mongo.db.ip.find({'bgppref': bgppref}, {'_id': 1})

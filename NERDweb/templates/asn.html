@@ -50,6 +50,19 @@
   <dt>{{ attr }}</dt><dd>{{ val }}</dd>
  {% endif %}
 {% endfor %}
+<dt> ASN SEARCH INFO </dt>
+{% for attr,val in asn_search_info|dictsort %}
+  {% if attr == "categories" %}
+    {% for a in val %}
+       <dt> {{a["category"]}} </dt>
+        {% for v in a["suggestions"] %}
+            <dt><dd>{{v['value']}}&emsp;{{v["description"]}}</dd></dt>
+        {% endfor %}
+    {% endfor %}
+  {% else %}
+    <dd> {{attr}} : {{ val }} </dd>
+  {% endif %}
+{% endfor %}
 </dl>
 
 </div>

@@ -301,6 +301,26 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dt>{{ attr }}</dt><dd>{{ val }}</dd>
  {% endif %}
 {% endfor %}
+<dt> RIPE IP SEARCH INFO </dt>
+{% for attr,val in ip_search_info|dictsort %}
+  {% if attr == "categories" %}
+    {% for a in val %}
+       <dt> {{a["category"]}} </dt>
+        {% for v in a["suggestions"] %}
+            <dt><dd>{{v['value']}}&emsp;{{v["description"]}}</dd></dt>
+        {% endfor %}
+    {% endfor %}
+  {% else %}
+    <dd> {{attr}} : {{ val }} </dd>
+  {% endif %}
+{% endfor %}
+<dt> RIPE IP REVERSE DNS</dt>
+{% if ip_reverse_dns['error'] == "" %}
+<dd> {{ ip_reverse_dns['result'] }} </dd>
+{% else %}
+<dd> {{ ip_reverse_dns['error'] }} </dd>
+{% endif %}
+
 </dl>
 
 {# Event plot -#}
