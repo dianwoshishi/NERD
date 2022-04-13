@@ -163,7 +163,17 @@ iplists:
   time:
     hour: "0,6,12,18"
     minute: 5
-  
+- id: blocklist_de_all
+  name: blocklist.de all
+  descr: Blocklist.de IPs that have been detected by fail2ban in the last forty eight hours.
+  firehol_link: http://iplists.firehol.org/?ipset=blocklist_de
+  provider_link: http://www.blocklist.de/en/index.html
+  url: http://lists.blocklist.de/lists/all.txt
+  regex: "^(\\A)"
+  time:
+    hour: "*/6"
+    minute: 5
+ 
 - id: sblam_ips
   name: Sblam!
   descr: Sblam! is a service that effectively protects forms for<br>comments in blogs, forums and guestbooks from spam.
@@ -520,7 +530,88 @@ iplists:
     confidenceMinimum: "50"
     headers:
       Accept: "text/plain"
-      Key: ""
+      Key: "2d575bd813a93a7647d421557c3549a8957583982acc8e1148fcda19fc8dabae0c319d5c449ddfe9"
+
+- id: php_commenters
+  name: "projecthoneypot.org comment spammers"
+  descr: "[projecthoneypot.org] (http://www.projecthoneypot.org/?rf=192670) comment spammers (this list is composed using an RSS feed)"
+  firehol_link: http://iplists.firehol.org/?ipset=php_commenters
+  provider_link: http://www.projecthoneypot.org/
+  url: http://www.projecthoneypot.org/list_of_ips.php?t=c&rss=1
+  regex: "(\\A)"
+  time:
+    hour: "*/4"
+    minute: 3
+- id: php_dictionary
+  name: "[projecthoneypot.org] directory attackers"
+  descr: "[projecthoneypot.org] (http://www.projecthoneypot.org/?rf=192670) directory attackers (this list is composed using an RSS feed)"
+  firehol_link: http://iplists.firehol.org/?ipset=php_dictionary
+  provider_link: http://www.projecthoneypot.org/
+  url: http://www.projecthoneypot.org/list_of_ips.php?t=d&rss=1
+  regex: "(\\A)"
+  time:
+    hour: "*/4"
+    minute: 5
+- id: php_harvesters
+  name: "[projecthoneypot.org] harvesters (IPs that surf the internet looking for email addresses) "
+  descr: "[projecthoneypot.org] (http://www.projecthoneypot.org/?rf=192670) harvesters (IPs that surf the internet looking for email addresses) (this list is composed using an RSS feed)"
+  firehol_link: http://iplists.firehol.org/?ipset=php_harvesters
+  provider_link: http://www.projecthoneypot.org/
+  url: http://www.projecthoneypot.org/list_of_ips.php?t=h&rss=1
+  regex: "(\\A)"
+  time:
+    hour: "*/4"
+    minute: 7
+- id: php_spammers
+  name: "[projecthoneypot.org] spam servers (IPs used by spammers to send sages)"
+  descr: "[projecthoneypot.org] (http://www.projecthoneypot.org/?rf=192670) spam servers (IPs used by spammers to send sages) (this list is composed using an RSS feed)"
+  firehol_link: http://iplists.firehol.org/?ipset=php_spammers
+  provider_link: http://www.projecthoneypot.org/
+  url: http://www.projecthoneypot.org/list_of_ips.php?t=s&rss=1
+  regex: "(\\A)"
+  time:
+    hour: "*/4"
+    minute: 9
+- id: alienvault_reputation
+  name:  "[AlienVault.com]IP reputation database"
+  descr: "[AlienVault.com] (https://www.alienvault.com/) IP reputation database"
+  firehol_link: http://iplists.firehol.org/?ipset=alienvault_reputation
+  provider_link: https://www.alienvault.com/
+  url: https://reputation.alienvault.com/reputation.generic
+  regex: "^(\\A)"
+  time:
+    hour: "*/6"
+    minute: 15 
+- id: bds_atif
+  name: Artillery Threat Intelligence Feed and Banlist Feed
+  descr: Binary Defense Systems Artillery Threat Intelligence Feed and Banlist Feed
+  firehol_link: http://iplists.firehol.org/?ipset=bds_atif
+  provider_link: https://www.binarydefense.com/
+  url: https://www.binarydefense.com/banlist.txt
+  regex: "^(\\A)"
+  time:
+    hour: 4
+    minute: 10 
+- id: bitcoin_nodes
+  name:  "[BitNodes] Bitcoin connected nodes, globally."
+  descr: "[BitNodes] (https://getaddr.bitnodes.io/) Bitcoin connected nodes, globally."
+  firehol_link: http://iplists.firehol.org/?ipset=bitcoin_nodes
+  provider_link: https://getaddr.bitnodes.io/
+  url: https://getaddr.bitnodes.io/api/v1/snapshots/latest/
+  regex: "(\\A)"
+  time:
+    hour: "*/4"
+    minute: 20
+
+- id: botvrij_dst
+  name: "[botvrij.eu] dst "
+  descr: "[botvrij.eu] (http://www.botvrij.eu/) Indicators of Compromise (IOCS) about malicious destination IPs, gathered via open source information feeds (blog pages and PDF documents) and then consolidated into different datasets. To ensure the quality of the data all entries older than approx. 6 months are removed."
+  firehol_link: http://iplists.firehol.org/?ipset=botvrij_dst
+  url: http://www.botvrij.eu/data/ioclist.ip-dst.raw
+  regex: "^(\\A)"
+  time:
+    hour: "*/4"
+    minute: 53
 
 # The following blacklists should be rsynced to local files by scripts in
 # cron, therefore they're not available until those scripts are set up and
