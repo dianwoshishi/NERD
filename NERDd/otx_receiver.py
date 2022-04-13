@@ -160,6 +160,7 @@ def process_pulses(pulses):
         ipv4_counter = 0
         ipv6_counter = 0
         indicators = pulse.get('indicators', [])
+        logger.info("{} IPs to process next ".format(len(indicators)))
         for indicator in indicators:
             if (indicator["type"] == "IPv4") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
                 ipv4_counter += 1

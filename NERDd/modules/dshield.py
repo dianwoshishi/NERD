@@ -16,6 +16,7 @@ import g
 import requests
 import logging
 import json
+import time
 
 from fake_useragent import UserAgent
 from faker import Faker
@@ -29,7 +30,7 @@ class DShield(NERDModule):
 
     def __init__(self):
         self.log = logging.getLogger('DShield')
-        #self.log.setLevel("DEBUG")
+        # self.log.setLevel("DEBUG")
         self.fake = Faker()
         # User-Agent string (with contact info) to be sent with each API request, as required by API usage instructions
         # (see https://isc.sans.edu/api)
@@ -59,14 +60,15 @@ class DShield(NERDModule):
         if etype != 'ip':
             return None
 
-        #headers= {'user-agent':str(UserAgent().random + ", contact: {}".format(self.fake.email()))}
-        headers= {'user-agent':self.user_agent}
+        headers= {'user-agent':str(UserAgent().random + ", contact: {}".format(self.fake.ascii_company_email()))}
+        #headers= {'user-agent':self.user_agent}
         try:
             # get response from server
             response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,5), headers=headers)
-            #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
+            self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
+                time.sleep(0.5)
                 return None
             data = json.loads(response.content.decode('utf-8'))['ip']
 
@@ -96,8 +98,8 @@ class DShield(NERDModule):
                 return None
 
         except Exception as e:
-            self.log.error(f"Can't get DShield data for IP {key}: {e}")
+            self.log.error(f"Can't get DShield data for IP {key}: {e}:{headers}")
             return None             # could be connection error etc.
 
-        self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
+        #self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
         return [('set', 'dshield', dshield_record)]

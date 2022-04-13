@@ -138,7 +138,7 @@ def main(cfg_file, process_index):
         modules.whois.WhoIS(),
         modules.dnsbl.DNSBLResolver(),
         modules.redis_bl.RedisBlacklist(),
-#        modules.shodan.Shodan(),
+        modules.shodan.Shodan(),
         modules.eml_asn_rank.EML_ASN_rank(),
         modules.reputation.Reputation(),
         modules.hostname.HostnameClass(),
@@ -150,7 +150,7 @@ def main(cfg_file, process_index):
         modules.fmp.FMP(),
         modules.reserved_ip.ReservedIPTags(),
         modules.ttl_updater.TTLUpdater(),
-#        modules.dshield.DShield(),
+        modules.dshield.DShield(),
 #        modules.otx.OTX()
     ]
     
