@@ -150,7 +150,7 @@ def main(cfg_file, process_index):
         modules.fmp.FMP(),
         modules.reserved_ip.ReservedIPTags(),
         modules.ttl_updater.TTLUpdater(),
-        modules.dshield.DShield(),
+#        modules.dshield.DShield(),
 #        modules.otx.OTX()
     ]
     

@@ -18,6 +18,7 @@ import logging
 import json
 
 from fake_useragent import UserAgent
+from faker import Faker
 
 BASE_URL = "https://isc.sans.edu/api"
 
@@ -29,7 +30,7 @@ class DShield(NERDModule):
     def __init__(self):
         self.log = logging.getLogger('DShield')
         #self.log.setLevel("DEBUG")
-
+        self.fake = Faker()
         # User-Agent string (with contact info) to be sent with each API request, as required by API usage instructions
         # (see https://isc.sans.edu/api)
         self.user_agent = g.config.get('dshield.user_agent', None)
@@ -58,10 +59,11 @@ class DShield(NERDModule):
         if etype != 'ip':
             return None
 
+        #headers= {'user-agent':str(UserAgent().random + ", contact: {}".format(self.fake.email()))}
+        headers= {'user-agent':self.user_agent}
         try:
-            headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,3), headers=headers)
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,5), headers=headers)
             #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
@@ -90,12 +92,12 @@ class DShield(NERDModule):
 
             # if some value is missing, DShield have no data for the IP (or the record is damaged), do not store
             if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and dshield_record['maxdate'] and dshield_record['updated'] ):
-                self.log.debug(f"No data in DShield for IP {key}")
+                self.log.debug("No data in DShield for IP {}".format(key))
                 return None
 
         except Exception as e:
             self.log.error(f"Can't get DShield data for IP {key}: {e}")
             return None             # could be connection error etc.
 
-        self.log.debug(f"DShield record for IP {key}: {dshield_record}")
+        self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
         return [('set', 'dshield', dshield_record)]
