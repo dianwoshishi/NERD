@@ -122,6 +122,15 @@
         More info in IP detail page.">{{ bl_cnt }} blacklist{{plural}}</span>
     {% endif -%}
   {% endif -%}
+  {% if ip.otx %}
+    {% set otx_cnt = ip.otx.relate_pulses |list|length -%}
+    {% set plural = "s" if otx_cnt > 1 else "" -%}
+    {% if otx_cnt > 0 -%}
+      <span class="tag otx_relates" title="The IP address is present on {{ otx_cnt }} OTX pulses{{plural}}:<br>
+        {% for pulse in ip.otx.relate_pulses  %}&bull; {{ pulse.name}}<br>{% endfor %}
+        More info in IP detail page.">{{ otx_cnt }} OTX pulses{{plural}}</span>
+    {% endif -%}
+  {% endif -%}
   {% if ip.dbl -%}
     {% set bl_cnt = ip.dbl|selectattr("v")|list|length -%}
     {% set plural = "s" if bl_cnt > 1 else "" -%}

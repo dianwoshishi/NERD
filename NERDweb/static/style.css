@@ -564,6 +564,9 @@ td.links img {
   background: #533;
 }
 
+.tag.otx_relates{
+  background: #833;
+}
 
 .tag-list-container {
   position: relative;
