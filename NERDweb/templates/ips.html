@@ -147,7 +147,8 @@
     {% if ip.shodan.linktype %}<span class="tag os">{{ip.shodan.linktype}}</span>{% endif %}
     {% if ip.shodan.tags %}<span class="tag os">{{ip.shodan.tags}}</span>{% endif %}
     <span class="ports">
-      {% for port in ip.shodan.ports %}<span class="tag port" title="Port {{port}} is opened according to Shodan">{{port}}</span>{% endfor %}
+      {% for port in ip.shodan.ports %}
+        <span class="tag port" title="Port {{port}} is opened according to Shodan<br/>{% for item in  _port_info_json_data[port|string] %} {{item}}<br/> {% endfor %}">{{port}}</span>{% endfor %}
     </span>
   {% endif %}
 {#

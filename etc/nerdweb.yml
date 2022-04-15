@@ -34,6 +34,8 @@ menu_items:
 
 data_disk_path: "/data"
 
+port_info: "/etc/nerd/service-names-port-numbers.json" # gen from https://github.com/dianwoshishi/port2services
+
 login:
   methods:
     local:

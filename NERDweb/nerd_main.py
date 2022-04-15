@@ -120,6 +120,12 @@ task_queue_writer.connect()
 # Init Ripeclient
 ripe_client = common.StatsRIPE.StatsRIPE()
 
+# Init port_info_from json file 
+port_info_path = config.get("port_info", "service-names-port-numbers.json")
+port_info_json_data = None
+with open(port_info_path,'r',encoding='utf8')as port_info_fp:
+    port_info_json_data = json.load(port_info_fp)
+
 # Create event database driver (according to config)
 EVENTDB_TYPE = config.get('eventdb', 'psql')
 if EVENTDB_TYPE == 'psql':
@@ -858,7 +864,7 @@ def ips():
 
     if g.ac('ipsearch') and form.validate():
         sortby = sort_mapping[form.sortby.data]
-        
+        _port_info_json_data =    port_info_json_data
         try:
             query = create_query(form)
             # Query parameters to be used in AJAX requests
