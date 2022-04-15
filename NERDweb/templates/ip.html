@@ -214,7 +214,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
 
 {# OTX pulses #}
 {% if ipinfo.otx_pulses %}
-  <dt> OTX pulses </dt>
+  <dt> OTX pulses {{ ipinfo.otx_pulses | length }}</dt>
   <dd class="scrollable">
     {% for otx_pulse in ipinfo.otx_pulses %}
     <div><b>[<a href="https://otx.alienvault.com/pulse/{{otx_pulse.pulse_id}}">{{ otx_pulse.pulse_id }}</a>] {{ otx_pulse.pulse_created }} | {{ otx_pulse.pulse_name }}</b>
@@ -251,7 +251,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dd>{{ val|reverse if val else '(null)'}}</dd>
  {% elif attr == "otx" %}
     {% if val.relate_pulses%}
-      <dt> OTX related pulses </dt>
+      <dt> OTX related pulses {{ val.relate_pulses| length }}</dt>
       <dd class="scrollable">
         {% for otx_pulse in val.relate_pulses %}
         <div><b>[<a href="https://otx.alienvault.com/pulse/{{otx_pulse.id}}">{{ otx_pulse.id}}</a>] {{ otx_pulse.created}} | {{ otx_pulse.name}}</b>
