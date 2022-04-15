@@ -217,7 +217,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dt> OTX pulses {{ ipinfo.otx_pulses | length }}</dt>
   <dd class="scrollable">
     {% for otx_pulse in ipinfo.otx_pulses %}
-    <div><b>[<a href="https://otx.alienvault.com/pulse/{{otx_pulse.pulse_id}}">{{ otx_pulse.pulse_id }}</a>] {{ otx_pulse.pulse_created }} | {{ otx_pulse.pulse_name }}</b>
+    <div><b>[<a target="_blank" href="https://otx.alienvault.com/pulse/{{otx_pulse.pulse_id}}">{{ otx_pulse.pulse_id }}</a>] {{ otx_pulse.pulse_created }} | {{ otx_pulse.pulse_name }}</b>
          <table style="padding-left: 30px; padding-bottom: 10px">
           <tr><td>Author name:</td><td>{{ otx_pulse.author_name }}</td></tr>
           <tr><td>Pulse modified:</td><td class="time" data-time={{ otx_pulse.pulse_modified|date_to_int }}>{{ otx_pulse.pulse_modified }}</td></tr>
