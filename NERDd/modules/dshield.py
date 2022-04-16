@@ -35,9 +35,11 @@ class DShield(NERDModule):
         # User-Agent string (with contact info) to be sent with each API request, as required by API usage instructions
         # (see https://isc.sans.edu/api)
         self.user_agent = g.config.get('dshield.user_agent', None)
-        if not self.user_agent or "CHANGE_ME" in self.user_agent:
-            self.log.warning("Missing mandatory configuration (user-agent), DShield module disabled.")
-            return
+        # if not self.user_agent or "CHANGE_ME" in self.user_agent:
+        #     self.log.warning("Missing mandatory configuration (user-agent), DShield module disabled.")
+        #     return
+        # count the success get count
+        self.success_count = 0
 
         g.um.register_handler(
             self.set_dshield,  # function (or bound method) to call
@@ -60,15 +62,16 @@ class DShield(NERDModule):
         if etype != 'ip':
             return None
 
-        headers= {'user-agent':str(UserAgent().random + ", contact: {}".format(self.fake.ascii_company_email()))}
+        # headers= {'user-agent':str(UserAgent().random + ", contact: {}".format(self.fake.ascii_company_email()))}
         #headers= {'user-agent':self.user_agent}
         try:
+            headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,5), headers=headers)
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(5,7), headers=headers)
             self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
-                time.sleep(0.5)
+                time.sleep(1)
                 return None
             data = json.loads(response.content.decode('utf-8'))['ip']
 
@@ -98,8 +101,9 @@ class DShield(NERDModule):
                 return None
 
         except Exception as e:
-            self.log.error(f"Can't get DShield data for IP {key}: {e}:{headers}")
+            self.log.error(f"Can't get DShield data for IP {key}: {e}:{headers}:{self.success_count}")
             return None             # could be connection error etc.
 
         #self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
+        self.success_count += 1
         return [('set', 'dshield', dshield_record)]
