@@ -110,7 +110,7 @@ class Shodan(NERDModule):
                 time.sleep(1)
                 if self.errors % 10 == 0:
                     self.log.critical("More than 10 API errors -> stopping module{}{}{}".format(ip, str(e), self.errors))
-                    #self.enabled = False
+                    self.enabled = False
             return None
         
         self.log.debug("Shodan info for {}: {}".format(ip, data))

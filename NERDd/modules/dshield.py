@@ -49,7 +49,8 @@ class DShield(NERDModule):
              'dshield.targets',
              'dshield.mindate',
              'dshield.updated',
-             'dshield.maxdate')    # tuple/list/set of attributes the method may change
+             'dshield.maxdate',
+             'dshield.latest')    # tuple/list/set of attributes the method may change
         )
 
     def set_dshield(self, ekey, rec, updates):
@@ -81,6 +82,7 @@ class DShield(NERDModule):
                 'mindate': "",
                 'updated': "",
                 'maxdate': "",
+                'latest':datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
             }
 
             # server can return no values, if it has no record of this IP
@@ -95,10 +97,10 @@ class DShield(NERDModule):
             if data['updated']:
                 dshield_record['updated'] = data['updated']
 
-            # if some value is missing, DShield have no data for the IP (or the record is damaged), do not store
-            if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and dshield_record['maxdate'] and dshield_record['updated'] ):
-                self.log.debug("No data in DShield for IP {}".format(key))
-                return None
+            # # if some value is missing, DShield have no data for the IP (or the record is damaged), do not store
+            # if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and dshield_record['maxdate'] and dshield_record['updated'] ):
+            #     self.log.debug("No data in DShield for IP {}".format(key))
+            #     return None
 
         except Exception as e:
             self.log.error(f"Can't get DShield data for IP {key}: {e}:{headers}:{self.success_count}")
