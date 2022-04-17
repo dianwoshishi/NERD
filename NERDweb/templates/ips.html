@@ -29,7 +29,7 @@
   <br>
   {{ form.blacklist.label }} <span id="bl_op_button" class="op_button"></span> {{ form.blacklist() }}{{ form.bl_op() }}{%- if form.blacklist.errors %} <span class="error">{{ ', '.join(form.blacklist.errors) }}</span>{% endif %} &nbsp; &amp; &nbsp;
   {{ form.tag.label }} <span id="tag_op_button" class="op_button"></span> {{ form.tag() }}{{ form.tag_op() }}{%- if form.tag.errors %} <span class="error">{{ ', '.join(form.tag.errors) }}</span>{% endif %} &nbsp;
-  {{ formfield(form.tag_conf, size=1)}}
+  {{ formfield(form.tag_conf, size=10)}}
   <br>
   {{ formfield(form.sortby) }}
   {{ formfield(form.asc) }}<br>
@@ -147,8 +147,14 @@
     {% if ip.shodan.linktype %}<span class="tag os">{{ip.shodan.linktype}}</span>{% endif %}
     {% if ip.shodan.tags %}<span class="tag os">{{ip.shodan.tags}}</span>{% endif %}
     <span class="ports">
-      {% for port in ip.shodan.ports %}
-        <span class="tag port" title="Port {{port}} is opened according to Shodan<br/>{% for item in  _port_info_json_data[port|string] %} {{item}}<br/> {% endfor %}">{{port}}</span>{% endfor %}
+      {% if ip.shodan.ports|length < 10 %}
+          {% for port in ip.shodan.ports|sort %}
+            <span class="tag port" title="Port {{port}} is opened according to Shodan<br/>{% for item in  _port_info_json_data[port|string] %} {{item}}<br/> {% endfor %}">{{port}}</span>
+          {% endfor %}
+        {%else %}
+          
+          <span class="tag port" title="Port {% for port in ip.shodan.ports|sort %}{{port}},{% endfor %} is opened according to Shodan<br/>">{{ip.shodan.ports|length}} ports</span>
+        {% endif %}
     </span>
   {% endif %}
 {#

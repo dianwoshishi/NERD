@@ -17,6 +17,7 @@ import requests
 import logging
 import json
 import time
+from datetime import datetime
 
 from fake_useragent import UserAgent
 from faker import Faker
@@ -50,7 +51,7 @@ class DShield(NERDModule):
              'dshield.mindate',
              'dshield.updated',
              'dshield.maxdate',
-             'dshield.latest')    # tuple/list/set of attributes the method may change
+             'dshield.latest')    # latest update time
         )
 
     def set_dshield(self, ekey, rec, updates):

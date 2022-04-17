@@ -200,6 +200,8 @@ mailer = Mail(app)
 app.config['WTF_CSRF_ENABLED'] = False
 #app.config['WTF_CSRF_CHECK_DEFAULT'] = False
 
+# Some configuration for webUI
+Max_number_of_addresses = 50
 
 # ***** Jinja2 filters *****
 
@@ -774,7 +776,7 @@ class IPFilterForm(FlaskForm):
                 ('ip','IP address'),
              ], default='rep')
     asc = BooleanField('Ascending', default=False)
-    limit = IntegerField('Max number of addresses', [validators.NumberRange(1, 1000)], default=20)
+    limit = IntegerField('Max number of addresses', [validators.NumberRange(1, 1000)], default=Max_number_of_addresses)
     
     # Choices for some lists must be loaded dynamically from DB, so they're
     # defined when FlaskForm is initialized

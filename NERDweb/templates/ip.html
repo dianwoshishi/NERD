@@ -293,6 +293,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
         <dd><b>First date: </b>{{ val.mindate }}</dd>
         <dd><b>Most recent date:  </b>{{ val.maxdate }}</dd>
         <dd><b>updated time:  </b>{{ val.updated}}</dd>
+        <dd><b>system latest update time:  </b>{{ val.latest}}</dd>
         <dd><a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a>,
             <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a></dd>
  {% elif val|is_date %}
