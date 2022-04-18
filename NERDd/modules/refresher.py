@@ -27,7 +27,7 @@ now = datetime.utcnow()
 
 commands = [
     # 3-tuple: expression returning iterable, entity_type, update_requests
-    #( "g.db.find('ip', {})", 'ip', [('event', '!every1d', None)] ),
+    ( "g.db.find('ip', {})", 'ip', [('event', '!refresh_rep', None)] ),
     #( "g.db.find('ip', {'as_maxmind': {'$exists': False}, 'as_rv': {'$exists': False}})", 'ip', [('event', '!refresh_asn', None)] ),
     #( "g.db.find('ip', {'geo': {'$exists': False}})", 'ip', [('event', '!refresh_geo', None)] ),
     #( "g.db.find('ip', {'bl': {'$exists': False}})", 'ip', [('event', '!refresh_localbl', None)] ),
@@ -162,8 +162,8 @@ class Refresher(NERDModule):
             for i,key in enumerate(keys):
                 # If there are already too much requests queued, wait a while
                 #print("***** QUEUE SIZE: {} *****".format(self._um.get_queue_size()))
-                while g.um.get_queue_size() > MAX_QUEUE_SIZE:
-                    time.sleep(0.2)
+                # while g.um.get_queue_size() > MAX_QUEUE_SIZE:
+                #     time.sleep(0.2)
                 
                 #print(key, actions)
                 g.um.update((etype,key), actions.copy())

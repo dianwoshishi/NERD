@@ -125,6 +125,8 @@ def main(cfg_file, process_index):
     import modules.dshield
     import modules.ttl_updater
     import modules.otx
+    import modules.score
+    import modules.refresher
     
     # Instantiate modules
     # TODO create all modules automatically (loop over all modules.* and find all objects derived from NERDModule)
@@ -151,6 +153,8 @@ def main(cfg_file, process_index):
         modules.reserved_ip.ReservedIPTags(),
         modules.ttl_updater.TTLUpdater(),
         modules.dshield.DShield(),
+        modules.score.Score(),
+        # modules.refresher.Refresher(),
 #        modules.otx.OTX()
     ]
     
