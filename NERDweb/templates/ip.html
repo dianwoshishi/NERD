@@ -287,15 +287,22 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dt>BGP Prefix</dt>
   <dd><a href="{{ url_for('bgppref') + val|replace('/','_') }}">{{ val }}</a></dd>
  {% elif attr == "dshield" %}
-    <dt>DShield</dt>
+    <dt>DShield - <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a>,<a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a></dt>
         <dd><b>Number of reports: </b>{{ val.reports }}</dd>
         <dd><b>Distinct targets: </b>{{ val.targets }}</dd>
         <dd><b>First date: </b>{{ val.mindate }}</dd>
         <dd><b>Most recent date:  </b>{{ val.maxdate }}</dd>
         <dd><b>updated time:  </b>{{ val.updated}}</dd>
         <dd><b>system latest update time:  </b>{{ val.latest}}</dd>
-        <dd><a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a>,
-            <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a></dd>
+        
+ {% elif attr == "dshield_events" %}
+        <dd><b>Number of sourceports: </b>{{ val.sourceports }}</dd>
+        <dd><b>Number of targetports: </b>{{ val.targetports }}</dd>
+        <dd><b>total_events </b>{{ val.total_events }}</dd>
+        <dd><b>protocol:  </b>{{ val.protocol }}</dd>
+        <dd><b>flags:  </b>{{ val.flags}}</dd>
+        <dd><b>system latest update time:  </b>{{ val.update_time}}</dd>
+        
  {% elif val|is_date %}
      <dt>{{ attr }}</dt><dd class="time" data-time={{ val|date_to_int }}>{{ val }}</dd>
  {% else %}
