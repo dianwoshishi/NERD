@@ -186,6 +186,13 @@
                       {% set tlp_white_tag.showed = tlp_white_tag.showed + 1 %}
                   {% endif %}
               {% endfor %}
+          {% elif tag_id == "dshield" %}
+              {% if ip.dshield.targets == 0 %}  
+                <span class="tag" title="Dshield-NoRecord">Dshield-Empty</span>
+              {% else %}
+                <span class="tag" style="{{ tag_color_style(config_tags[tag_id].tag_color, tag_param.confidence) }}" title="{% if "description" in config_tags[tag_id] %}<b>{{config_tags[tag_id].description}}</b><br /><br />{% endif %}{% if "info" in tag_param %}{{tag_param.info}}<br /><br />{% endif %}Confidence: <i>{{tag_param.confidence}}</i><br />Time added: <i>{{tag_param.time_added|datetime}}</i><br />Time modified: <i>{{tag_param.time_modified|datetime}}</i>">
+                {{config_tags[tag_id].name}} 
+              {% endif %}
           {% else %}
               <span class="tag" style="{{ tag_color_style(config_tags[tag_id].tag_color, tag_param.confidence) }}" title="{% if "description" in config_tags[tag_id] %}<b>{{config_tags[tag_id].description}}</b><br /><br />{% endif %}{% if "info" in tag_param %}{{tag_param.info}}<br /><br />{% endif %}Confidence: <i>{{tag_param.confidence}}</i><br />Time added: <i>{{tag_param.time_added|datetime}}</i><br />Time modified: <i>{{tag_param.time_modified|datetime}}</i>">
               {{config_tags[tag_id].name}}
