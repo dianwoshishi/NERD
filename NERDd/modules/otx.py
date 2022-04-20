@@ -59,3 +59,56 @@ class OTX(NERDModule):
         if relate_pulses == []:
             return None
         return [('set', 'otx.relate_pulses', relate_pulses)]
+
+
+"""
+{
+	'id': '5a64f74f0e543738c12bc973',
+	'name': 'Webscanners with Bad Requests - HTTP Status 400 - 1/20/2018 thru current day',
+	'description': 'Webscanners who&amp;amp;amp;#39;s requests resulted in HTTP Status code 400 due to WAF rules or LB parsing issues',
+	'modified': '2022-04-20T03:45:17.938000',
+	'created': '2018-01-21T20:25:51.668000',
+	'tags': ['webscanner', 'bruteforce', 'badrequest', 'probing', 'webscan'],
+	'references': [],
+	'public': 1,
+	'adversary': '',
+	'targeted_countries': [],
+	'malware_families': [],
+	'attack_ids': [],
+	'industries': [],
+	'TLP': 'white',
+	'cloned_from': None,
+	'export_count': 1388,
+	'upvotes_count': 0,
+	'downvotes_count': 0,
+	'votes_count': 0,
+	'locked': False,
+	'pulse_source': 'web',
+	'validator_count': 0,
+	'comment_count': 0,
+	'follower_count': 0,
+	'vote': 0,
+	'author': {
+		'username': 'david3',
+		'id': '2807',
+		'avatar_url': '/otxapi/users/avatar_image/media/avatars/david3/resized/80/fireball-dwf.jpg',
+		'is_subscribed': False,
+		'is_following': False
+	},
+	'indicator_type_counts': {
+		'IPv4': 3231
+	},
+	'indicator_count': 3231,
+	'is_author': False,
+	'is_subscribing': None,
+	'subscriber_count': 1078,
+	'modified_text': '6 minutes ago ',
+	'is_modified': True,
+	'groups': [],
+	'in_group': False,
+	'threat_hunter_scannable': True,
+	'threat_hunter_has_agents': 1,
+	'related_indicator_type': 'IPv4',
+	'related_indicator_is_active': 1
+}
+"""

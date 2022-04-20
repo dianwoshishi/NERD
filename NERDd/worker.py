@@ -155,7 +155,7 @@ def main(cfg_file, process_index):
         modules.dshield.DShield(),
         modules.score.Score(),
         # modules.refresher.Refresher(),
-#        modules.otx.OTX()
+       modules.otx.OTX()
     ]
     
     
