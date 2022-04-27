@@ -380,6 +380,8 @@ if not args.one_shot:
             id = bl['id']
             name = bl['name']
             url = bl['url']
+            if url == None:
+                continue
             regex = bl.get('regex', '')
             refresh_time = bl['time']
             other_params = bl.get('params', {})

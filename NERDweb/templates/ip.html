@@ -34,7 +34,7 @@
 {# Note: The onsubmit script overrides funcionality of Submit button to put IP address to custom URL #}
 <form id="ip_form" onsubmit="window.location='{{ url_for('ip') }}'+$('#ip_form #ip').val(); return false;">
   {# form.csrf_token #}
-  {{ form.ip.label }} {{ form.ip(size=30) }}
+  {{ form.ip.label }} {{ form.ip(size=50) }}
   <input type="submit">
 </form>
 
@@ -48,7 +48,7 @@
 
 <div class="header">
 <div class="links">
-Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Search on Shodan" target="_blank"><img src="{{ url_for('static', filename='shodan_icon.png') }}"></a><a href="https://search.censys.io/hosts/{{ ip }}" title="Search on Censys" target="_blank"><img src="{{ url_for('static', filename='censys_icon.png') }}"></a><span class="divider"></span><a href="http://multirbl.valli.org/lookup/{{ ip }}.html" title="Blacklist Check at valli.org" target="_blank"><img src="{{ url_for('static', filename='valli_icon.png') }}"></a><a href="#" title="Blacklist Check at whatismyipaddress.com" onclick="$('#bl-check-form-ip').val('{{ip}}'); $('#bl-check-form').submit(); return false;"><img src="{{ url_for('static', filename='whatismyipaddress.png') }}"></a><span class="divider"></span><a href="https://www.abuseipdb.com/check/{{ ip }}" title="Search on AbuseIPDB" target="_blank"><img src="{{ url_for('static', filename='abuse_ip_db_icon.png') }}"></a><a href="https://www.threatcrowd.org/ip.php?ip={{ ip }}" title="Search on ThreatCrowd" target="_blank"><img src="{{ url_for('static', filename='threat_crowd_icon.png') }}"></a><a href="https://www.talosintelligence.com/reputation_center/lookup?search={{ ip }}" title="Search at Talos Intelligence Reputation Center" target="_blank"><img src="{{ url_for('static', filename='talos_icon.png') }}"></a><a href="https://viz.greynoise.io/ip/{{ ip }}" title="Search at GreyNoise Visualizer" target="_blank"><img src="{{ url_for('static', filename='greynoise-logo.png') }}"></a><a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}" title="Search on DShield" target="_blank"><img src="{{ url_for('static', filename='dshield_icon.png') }}"></a>
+Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Search on Shodan" target="_blank"><img src="{{ url_for('static', filename='shodan_icon.png') }}"></a><a href="https://search.censys.io/hosts/{{ ip }}" title="Search on Censys" target="_blank"><img src="{{ url_for('static', filename='censys_icon.png') }}"></a><span class="divider"></span><a href="http://multirbl.valli.org/lookup/{{ ip }}.html" title="Blacklist Check at valli.org" target="_blank"><img src="{{ url_for('static', filename='valli_icon.png') }}"></a><a href="#" title="Blacklist Check at whatismyipaddress.com" onclick="$('#bl-check-form-ip').val('{{ip}}'); $('#bl-check-form').submit(); return false;"><img src="{{ url_for('static', filename='whatismyipaddress.png') }}"></a><span class="divider"></span><a href="https://www.abuseipdb.com/check/{{ ip }}" title="Search on AbuseIPDB" target="_blank"><img src="{{ url_for('static', filename='abuse_ip_db_icon.png') }}"></a><a href="https://www.threatcrowd.org/ip.php?ip={{ ip }}" title="Search on ThreatCrowd" target="_blank"><img src="{{ url_for('static', filename='threat_crowd_icon.png') }}"></a><a href="https://www.talosintelligence.com/reputation_center/lookup?search={{ ip }}" title="Search at Talos Intelligence Reputation Center" target="_blank"><img src="{{ url_for('static', filename='talos_icon.png') }}"></a><a href="https://viz.greynoise.io/ip/{{ ip }}" title="Search at GreyNoise Visualizer" target="_blank"><img src="{{ url_for('static', filename='greynoise-logo.png') }}"></a><a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}" title="Search on DShield" target="_blank"><img src="{{ url_for('static', filename='dshield_icon.png') }}"></a><a href="https://otx.alienvault.com/indicator/ip/{{ ip }}" title="Search on AlienVault OTX" target="_blank"><img src="{{ url_for('static', filename='alienvault_otx_icon.png') }}"></a>
 </div>
 {% if ipinfo %}<span class="rep" title="Reputation score" style="background-color: {{ rep_css_color(ipinfo.rep) }}">{{ "%.3f"|format(ipinfo.rep)|replace("0.",".") if ipinfo.rep is defined else "--" }}</span>{% endif %}
 <span class="entity-id">{{ ip }}</span><span class="entity-name">{{ ipinfo.hostname|reverse if ipinfo.hostname else '' }}</span>
@@ -214,10 +214,10 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
 
 {# OTX pulses #}
 {% if ipinfo.otx_pulses %}
-  <dt> OTX pulses </dt>
+  <dt> OTX pulses {{ ipinfo.otx_pulses | length }}</dt>
   <dd class="scrollable">
     {% for otx_pulse in ipinfo.otx_pulses %}
-    <div><b>[<a href="https://otx.alienvault.com/pulse/{{otx_pulse.pulse_id}}">{{ otx_pulse.pulse_id }}</a>] {{ otx_pulse.pulse_created }} | {{ otx_pulse.pulse_name }}</b>
+    <div><b>[<a target="_blank" href="https://otx.alienvault.com/pulse/{{otx_pulse.pulse_id}}">{{ otx_pulse.pulse_id }}</a>] {{ otx_pulse.pulse_created }} | {{ otx_pulse.pulse_name }}</b>
          <table style="padding-left: 30px; padding-bottom: 10px">
           <tr><td>Author name:</td><td>{{ otx_pulse.author_name }}</td></tr>
           <tr><td>Pulse modified:</td><td class="time" data-time={{ otx_pulse.pulse_modified|date_to_int }}>{{ otx_pulse.pulse_modified }}</td></tr>
@@ -251,7 +251,13 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dd>{{ val|reverse if val else '(null)'}}</dd>
  {% elif attr == "otx" %}
     {% if val.relate_pulses%}
-      <dt> OTX related pulses </dt>
+      <dt> OTX related pulses {{ val.relate_pulses| length }}</dt>
+      <span class="tag">
+        {% for otx_pulse in val.relate_pulses %}
+            {% for tag in otx_pulse.tags %}<span class="tag" title="tag {{tag}} marked by OTX">{{tag}}</span>{% endfor %}
+        {% endfor%}
+        
+        </span>
       <dd class="scrollable">
         {% for otx_pulse in val.relate_pulses %}
         <div><b>[<a href="https://otx.alienvault.com/pulse/{{otx_pulse.id}}">{{ otx_pulse.id}}</a>] {{ otx_pulse.created}} | {{ otx_pulse.name}}</b>
@@ -287,20 +293,48 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dt>BGP Prefix</dt>
   <dd><a href="{{ url_for('bgppref') + val|replace('/','_') }}">{{ val }}</a></dd>
  {% elif attr == "dshield" %}
-    <dt>DShield</dt>
+    <dt>DShield - <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a>,<a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a></dt>
         <dd><b>Number of reports: </b>{{ val.reports }}</dd>
         <dd><b>Distinct targets: </b>{{ val.targets }}</dd>
         <dd><b>First date: </b>{{ val.mindate }}</dd>
         <dd><b>Most recent date:  </b>{{ val.maxdate }}</dd>
         <dd><b>updated time:  </b>{{ val.updated}}</dd>
-        <dd><a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a>,
-            <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a></dd>
+        <dd><b>system latest update time:  </b>{{ val.latest}}</dd>
+        
+ {% elif attr == "dshield_events" %}
+        <dd><b>Number of sourceports: </b>{{ val.sourceports }}</dd>
+        <dd><b>Number of targetports: </b>{{ val.targetports }}</dd>
+        <dd><b>total_events </b>{{ val.total_events }}</dd>
+        <dd><b>protocol:  </b>{{ val.protocol }}</dd>
+        <dd><b>flags:  </b>{{ val.flags}}</dd>
+        <dd><b>system latest update time:  </b>{{ val.update_time}}</dd>
+        
  {% elif val|is_date %}
      <dt>{{ attr }}</dt><dd class="time" data-time={{ val|date_to_int }}>{{ val }}</dd>
  {% else %}
   <dt>{{ attr }}</dt><dd>{{ val }}</dd>
  {% endif %}
 {% endfor %}
+<dt> RIPE IP SEARCH INFO </dt>
+{% for attr,val in ip_search_info|dictsort %}
+  {% if attr == "categories" %}
+    {% for a in val %}
+       <dt> {{a["category"]}} </dt>
+        {% for v in a["suggestions"] %}
+            <dt><dd>{{v['value']}}&emsp;{{v["description"]}}</dd></dt>
+        {% endfor %}
+    {% endfor %}
+  {% else %}
+    <dd> {{attr}} : {{ val }} </dd>
+  {% endif %}
+{% endfor %}
+<dt> RIPE IP REVERSE DNS</dt>
+{% if ip_reverse_dns['error'] == "" %}
+<dd> {{ ip_reverse_dns['result'] }} </dd>
+{% else %}
+<dd> {{ ip_reverse_dns['error'] }} </dd>
+{% endif %}
+
 </dl>
 
 {# Event plot -#}

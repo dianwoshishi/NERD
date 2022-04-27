@@ -113,7 +113,7 @@ class HostnameClass(NERDModule):
                 self.log.debug("Hostname ({}) matches regex {} and has been classified as {}.".format(hostname, regex[0].pattern, tag))
                 if tag not in tags:
                     tags.append(tag)
-
+        # TODO: hex in hostname, eg:pd9f74368.dip0.t-ipconnect.de
         if tags:
             return [('set', 'hostname_class', tags)]
         else:

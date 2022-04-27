@@ -107,4 +107,4 @@ dshield:
   # DShield requires to include contact information in the User-Agent header of API requests
   # (see https://www.dshield.org/api).
   # Fill in a contact to the NERD admin and uncomment the line, otherwise the DShield module is disabled.
-  user_agent: "NERD (github.com/CESNET/NERD/), contact: contact.me"
+  user_agent: "User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.6; rv:25.0) Gecko/20100101 Firefox/25.0, contact: umefxs98074@example.org"

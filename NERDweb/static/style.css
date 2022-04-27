@@ -25,6 +25,9 @@ hr {
 	font-family: inherit;
 	font-size: 1.0em;
 }
+.center {
+    text-align:center;
+}
 
 .ui-tooltip {
   padding: 0.25em 0.4em;
@@ -564,6 +567,9 @@ td.links img {
   background: #533;
 }
 
+.tag.otx_relates{
+  background: #833;
+}
 
 .tag-list-container {
   position: relative;

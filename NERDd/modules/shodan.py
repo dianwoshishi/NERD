@@ -8,6 +8,7 @@ Requirements:
 from core.basemodule import NERDModule
 import g
 
+import time
 import logging
 import threading
 import shodan
@@ -106,8 +107,9 @@ class Shodan(NERDModule):
             else:
                 self.log.error("Error when querying '{}': {}".format(ip, str(e)))
                 self.errors += 1
-                if self.errors > 10:
-                    self.log.critical("More than 10 API errors -> stopping module".format(ip, str(e)))
+                time.sleep(1)
+                if self.errors % 10 == 0:
+                    self.log.critical("More than 10 API errors -> stopping module{}{}{}".format(ip, str(e), self.errors))
                     self.enabled = False
             return None
         

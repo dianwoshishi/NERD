@@ -29,7 +29,7 @@ class CIRCL_BGPRank(NERDModule):
             self.set_bgprank,  # function (or bound method) to call
             'asn',                # entity type
             ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
-            ('circl_bgprank','asn_description',)    # tuple/list/set of attributes the method may change
+            ('circl_bgprank','asn_description','position', 'total_known_asns',)    # tuple/list/set of attributes the method may change
         )
 
     def set_bgprank(self, ekey, rec, updates):
@@ -70,7 +70,7 @@ class CIRCL_BGPRank(NERDModule):
             #                          }
             #              }
             # }
-            reply = self.requests_session.post(QUERY_URL, headers=headers, data=query, timeout=(3,3))
+            reply = self.requests_session.post(QUERY_URL, headers=headers, data=query, timeout=(1,1))
             reply = reply.json()
 
             # when ASN is not found (or request is completely wrong), server returns the same response format with
@@ -78,7 +78,7 @@ class CIRCL_BGPRank(NERDModule):
             asn_description = reply['response']['asn_description']
             rank = reply['response']['ranking']['rank']
             pos = reply['response']['ranking']['position']
-            total_know_anss = reply['response']['ranking']['total_known_asns']
+            total_known_asns = reply['response']['ranking']['total_known_asns']
             if not reply['response']['asn_description'] and rank == 0.0 and pos is None:
                 self.log.info("ASN {} not found in BGP ranking database".format(key))
             self.log.debug("Setting BGPRank of ASN {} to {}".format(key, rank))
@@ -86,7 +86,7 @@ class CIRCL_BGPRank(NERDModule):
             self.log.error("Can't get BGPRank of ASN {}: {}:{}".format(query, headers, e))
             return None             # could be connection error etc.
         
-        return [('set', 'circl_bgprank', rank),('set', 'asn_description', asn_description) ]
+        return [('set', 'circl_bgprank', rank),('set', 'asn_description', asn_description),('set', 'position', pos), ('set', 'total_know_asns', total_known_asns)]
 if __name__ == '__main__':
     bgprank = CIRCL_BGPRank()
     ret = bgprank.set_bgprank((asn, 4538), [], [])

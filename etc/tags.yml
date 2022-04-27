@@ -178,6 +178,13 @@ tags:
     condition: "cloudips"
     info: "this ip with was in cloudIPs {cloudips}"
 
+  IPv6:
+    name: IPv6
+    description: "This is an IPv6 address"
+    tag_color: "#48D1CC"
+    condition: "ipversion == '6'"
+    info: "This is an IPv6 address"  
+
   misp_tlp_white:
     name: MISP (tlp:white)
     description: "IP is in MISP event(s) (with TLP white)"

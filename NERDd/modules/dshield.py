@@ -16,8 +16,11 @@ import g
 import requests
 import logging
 import json
+import time
+from datetime import datetime
 
 from fake_useragent import UserAgent
+from faker import Faker
 
 BASE_URL = "https://isc.sans.edu/api"
 
@@ -28,14 +31,16 @@ class DShield(NERDModule):
 
     def __init__(self):
         self.log = logging.getLogger('DShield')
-        #self.log.setLevel("DEBUG")
-
+        # self.log.setLevel("DEBUG")
+        self.fake = Faker()
         # User-Agent string (with contact info) to be sent with each API request, as required by API usage instructions
         # (see https://isc.sans.edu/api)
         self.user_agent = g.config.get('dshield.user_agent', None)
-        if not self.user_agent or "CHANGE_ME" in self.user_agent:
-            self.log.warning("Missing mandatory configuration (user-agent), DShield module disabled.")
-            return
+        # if not self.user_agent or "CHANGE_ME" in self.user_agent:
+        #     self.log.warning("Missing mandatory configuration (user-agent), DShield module disabled.")
+        #     return
+        # count the success get count
+        self.success_count = 0
 
         g.um.register_handler(
             self.set_dshield,  # function (or bound method) to call
@@ -45,8 +50,77 @@ class DShield(NERDModule):
              'dshield.targets',
              'dshield.mindate',
              'dshield.updated',
-             'dshield.maxdate')    # tuple/list/set of attributes the method may change
+             'dshield.maxdate',
+             'dshield.latest')    # latest update time
         )
+        g.um.register_handler(
+            self.set_dshield_events,  # function (or bound method) to call
+            'ip',                # entity type
+            ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
+            ('dshield.sourceports',
+             'dshield.targetports',
+             'dshield.total_events',
+             'dshield.protocol',
+             'dshield.flags',
+             'dshield.update_time')    # latest update time
+        )
+
+    def set_dshield_events(self, ekey, rec, updates):
+        """
+        Gets data from DShield api, parses them and returns them.
+        """
+        etype, key = ekey
+
+        if etype != 'ip':
+            return None
+        try:
+            headers= {'user-agent':str(UserAgent().random)}
+            # get response from server
+            response = requests.get(f"{BASE_URL}/ipdetails/{key}?json", timeout=(5,7), headers=headers)
+            #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
+            if response.text.startswith("<html><body>Too Many Requests"):
+                print(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
+                return None
+            data = json.loads(response.content.decode('utf-8'))
+            if len(data) == 0:
+            	return None
+            # {"date":"2022-04-17","time":"22:56:35","sourceport":64246,"targetport":587,"protocol":6,"flags":"A"}
+            event_record = {
+                'sourceports': 0,
+                'targetports': 0,
+               	'total_events':0,
+               	'protocol':set(),
+               	'flags':set(),
+                'update_time': "",
+            }
+            sourceports = set()
+            targetports = set()
+            protocol = set()
+            flags = set()
+            total_events = 0
+            for event in data:
+            	sourceports.add(event['sourceport'])
+            	targetports.add(event['targetport'])
+            	protocol.add(event['protocol'])
+            	flags.add(event['flags'])
+            	total_events += 1
+            
+            event_record['sourceports'] = len(sourceports)
+            event_record['targetports'] = len(targetports)
+            event_record['protocol'] = list(protocol)
+            event_record['flags'] = list(flags)
+            event_record['total_events'] = total_events
+            event_record['update_time'] = datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
+
+            # print(key, json.dumps(event_record))
+
+        except Exception as e:
+            print(f"Can't get DShield data for IP {key}: {e}")
+            return None             # could be connection error etc.
+
+        
+        return [('set', 'dshield_events', event_record)]
+                
 
     def set_dshield(self, ekey, rec, updates):
         """
@@ -58,13 +132,16 @@ class DShield(NERDModule):
         if etype != 'ip':
             return None
 
+        # headers= {'user-agent':str(UserAgent().random + ", contact: {}".format(self.fake.ascii_company_email()))}
+        #headers= {'user-agent':self.user_agent}
         try:
             headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(3,3), headers=headers)
-            #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(5,7), headers=headers)
+            self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
+                time.sleep(1)
                 return None
             data = json.loads(response.content.decode('utf-8'))['ip']
 
@@ -74,6 +151,7 @@ class DShield(NERDModule):
                 'mindate': "",
                 'updated': "",
                 'maxdate': "",
+                'latest':datetime.now().strftime("%Y-%m-%dT%H:%M:%S")
             }
 
             # server can return no values, if it has no record of this IP
@@ -88,14 +166,15 @@ class DShield(NERDModule):
             if data['updated']:
                 dshield_record['updated'] = data['updated']
 
-            # if some value is missing, DShield have no data for the IP (or the record is damaged), do not store
-            if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and dshield_record['maxdate'] and dshield_record['updated'] ):
-                self.log.debug(f"No data in DShield for IP {key}")
-                return None
+            # # if some value is missing, DShield have no data for the IP (or the record is damaged), do not store
+            # if not (dshield_record['reports'] and dshield_record['targets'] and dshield_record['mindate'] and dshield_record['maxdate'] and dshield_record['updated'] ):
+            #     self.log.debug("No data in DShield for IP {}".format(key))
+            #     return None
 
         except Exception as e:
-            self.log.error(f"Can't get DShield data for IP {key}: {e}")
+            self.log.error(f"Can't get DShield data for IP {key}: {e}:{headers}:{self.success_count}")
             return None             # could be connection error etc.
 
-        self.log.debug(f"DShield record for IP {key}: {dshield_record}")
+        #self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
+        self.success_count += 1
         return [('set', 'dshield', dshield_record)]

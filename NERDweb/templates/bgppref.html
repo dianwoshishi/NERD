@@ -20,6 +20,11 @@
 {% else %}
 
 <dl class="attrs">
+<dt>RIPE Prefix INFO</dt>
+{% for attr,val in prefix_info |dictsort %}
+    <dd>{{ attr}} : {{ val }} </dd>
+{% endfor %}
+
 {% for attr,val in rec|dictsort %}
  {% if attr.startswith("_") and not ac('internal_attrs') %}
   {# pass (hide attrs starting with '_' from normal users) #}

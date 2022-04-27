@@ -125,6 +125,8 @@ def main(cfg_file, process_index):
     import modules.dshield
     import modules.ttl_updater
     import modules.otx
+    import modules.score
+    import modules.refresher
     
     # Instantiate modules
     # TODO create all modules automatically (loop over all modules.* and find all objects derived from NERDModule)
@@ -138,20 +140,22 @@ def main(cfg_file, process_index):
         modules.whois.WhoIS(),
         modules.dnsbl.DNSBLResolver(),
         modules.redis_bl.RedisBlacklist(),
-        modules.shodan.Shodan(),
         modules.eml_asn_rank.EML_ASN_rank(),
-        modules.reputation.Reputation(),
+        # modules.reputation.Reputation(),
         modules.hostname.HostnameClass(),
         modules.caida_as_class.CaidaASclass(),
         modules.bgp_rank.CIRCL_BGPRank(),
         modules.event_type_counter.EventTypeCounter(),
         modules.tags.Tags(),
-        modules.passive_dns.PassiveDNSResolver(),
-        modules.fmp.FMP(),
+        # modules.passive_dns.PassiveDNSResolver(),
+        # modules.fmp.FMP(),
         modules.reserved_ip.ReservedIPTags(),
         modules.ttl_updater.TTLUpdater(),
+        modules.score.Score(),
+        # modules.refresher.Refresher(),
+        modules.otx.OTX(),
+        modules.shodan.Shodan(),
         modules.dshield.DShield(),
-        modules.otx.OTX()
     ]
     
     

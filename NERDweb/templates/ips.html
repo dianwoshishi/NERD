@@ -29,7 +29,7 @@
   <br>
   {{ form.blacklist.label }} <span id="bl_op_button" class="op_button"></span> {{ form.blacklist() }}{{ form.bl_op() }}{%- if form.blacklist.errors %} <span class="error">{{ ', '.join(form.blacklist.errors) }}</span>{% endif %} &nbsp; &amp; &nbsp;
   {{ form.tag.label }} <span id="tag_op_button" class="op_button"></span> {{ form.tag() }}{{ form.tag_op() }}{%- if form.tag.errors %} <span class="error">{{ ', '.join(form.tag.errors) }}</span>{% endif %} &nbsp;
-  {{ formfield(form.tag_conf, size=1)}}
+  {{ formfield(form.tag_conf, size=10)}}
   <br>
   {{ formfield(form.sortby) }}
   {{ formfield(form.asc) }}<br>
@@ -102,6 +102,7 @@
   <span>{{ip.events_meta.total if ip.events_meta else 0}}</span><span>{{ip._evt_info.n_nodes}}</span><span>{{ip._evt_info.n_cats}}</span>
   {% if ip._showable_misp_events %}<br><span class="misp">+ {{ ip._showable_misp_events }} MISP events</span>{% endif %}
   {% if ip.otx_pulses %}<br><span class="otx">+ {{ ip.otx_pulses|length }} OTX pulses</span>{% endif %}
+  {% if ip.otx is defined %}<br><span class="otx">+ {{ip.otx.relate_pulses|length }} OTX relate pulses</span>{% endif %}
 </td>
 <td class="reputation" style="background-color: {{ rep_css_color(ip.rep) }}">
   {{ "%.3f"|format(ip.rep) if 'rep' in ip else "---" }}
@@ -122,6 +123,15 @@
         More info in IP detail page.">{{ bl_cnt }} blacklist{{plural}}</span>
     {% endif -%}
   {% endif -%}
+  {% if ip.otx %}
+    {% set otx_cnt = ip.otx.relate_pulses |list|length -%}
+    {% set plural = "s" if otx_cnt > 1 else "" -%}
+    {% if otx_cnt > 0 -%}
+      <span class="tag otx_relates" title="The IP address is present on {{ otx_cnt }} OTX pulses{{plural}}:<br>
+        {% for pulse in ip.otx.relate_pulses  %}&bull; {{ pulse.name}} ({{pulse.subscriber_count}}) <br>{% endfor %}
+        More info in IP detail page.">{{ otx_cnt }} OTX pulses{{plural}}</span>
+    {% endif -%}
+  {% endif -%}
   {% if ip.dbl -%}
     {% set bl_cnt = ip.dbl|selectattr("v")|list|length -%}
     {% set plural = "s" if bl_cnt > 1 else "" -%}
@@ -138,7 +148,14 @@
     {% if ip.shodan.linktype %}<span class="tag os">{{ip.shodan.linktype}}</span>{% endif %}
     {% if ip.shodan.tags %}<span class="tag os">{{ip.shodan.tags}}</span>{% endif %}
     <span class="ports">
-      {% for port in ip.shodan.ports %}<span class="tag port" title="Port {{port}} is opened according to Shodan">{{port}}</span>{% endfor %}
+      {% if ip.shodan.ports|length < 10 %}
+          {% for port in ip.shodan.ports|sort %}
+            <span class="tag port" title="Port {{port}} is opened according to Shodan<br/>{% for item in  _port_info_json_data[port|string] %} {{item}}<br/> {% endfor %}">{{port}}</span>
+          {% endfor %}
+        {%else %}
+          
+          <span class="tag port" title="Port {% for port in ip.shodan.ports|sort %}{{port}},{% endfor %} is opened according to Shodan<br/>">{{ip.shodan.ports|length}} ports</span>
+        {% endif %}
     </span>
   {% endif %}
 {#
@@ -170,6 +187,13 @@
                       {% set tlp_white_tag.showed = tlp_white_tag.showed + 1 %}
                   {% endif %}
               {% endfor %}
+          {% elif tag_id == "dshield" %}
+              {% if ip.dshield.targets == 0 %}  
+                <span class="tag" title="Dshield-NoRecord">Dshield-Empty</span>
+              {% else %}
+                <span class="tag" style="{{ tag_color_style(config_tags[tag_id].tag_color, tag_param.confidence) }}" title="{% if "description" in config_tags[tag_id] %}<b>{{config_tags[tag_id].description}}</b><br /><br />{% endif %}{% if "info" in tag_param %}{{tag_param.info}}<br /><br />{% endif %}Confidence: <i>{{tag_param.confidence}}</i><br />Time added: <i>{{tag_param.time_added|datetime}}</i><br />Time modified: <i>{{tag_param.time_modified|datetime}}</i>">
+                {{config_tags[tag_id].name}} 
+              {% endif %}
           {% else %}
               <span class="tag" style="{{ tag_color_style(config_tags[tag_id].tag_color, tag_param.confidence) }}" title="{% if "description" in config_tags[tag_id] %}<b>{{config_tags[tag_id].description}}</b><br /><br />{% endif %}{% if "info" in tag_param %}{{tag_param.info}}<br /><br />{% endif %}Confidence: <i>{{tag_param.confidence}}</i><br />Time added: <i>{{tag_param.time_added|datetime}}</i><br />Time modified: <i>{{tag_param.time_modified|datetime}}</i>">
               {{config_tags[tag_id].name}}
@@ -198,6 +222,7 @@
             <a href="https://www.talosintelligence.com/reputation_center/lookup?search={{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='talos_icon.png') }}"> &nbsp; Talos Intelligence Center</a>
             <a href="https://viz.greynoise.io/ip/{{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='greynoise-logo.png') }}"> &nbsp; Greynoise Visualizer</a>
             <a href="https://isc.sans.edu/ipinfo.html?ip={{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='dshield_icon.png') }}"> &nbsp; DShield</a>
+            <a href="https://otx.alienvault.com/indicator/ip/{{ ip._id }}" target="_blank"><img src="{{ url_for('static', filename='alienvault_otx_icon.png') }}">&nbsp; AlienVault OTX</a>
         </div>
     </div>
 </td>

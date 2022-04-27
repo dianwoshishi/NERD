@@ -24,6 +24,7 @@
 {% else %}
 
 <dl class="attrs">
+  <dt>as-reports</dt><dd><a  target="_blank"  href="https://www.cidr-report.org/cgi-bin/as-report?as=AS{{ asn }}&view=2.0">reports</a></dd>
 {% for attr,val in rec|dictsort %}
  {% if attr.startswith("_") and not ac('internal_attrs') %}
   {# pass (hide attrs starting with '_' from normal users) #}
@@ -48,6 +49,19 @@
  {% else %}
   <dt>{{ attr }}</dt><dd>{{ val }}</dd>
  {% endif %}
+{% endfor %}
+<dt> ASN SEARCH INFO </dt>
+{% for attr,val in asn_search_info|dictsort %}
+  {% if attr == "categories" %}
+    {% for a in val %}
+       <dt> {{a["category"]}} </dt>
+        {% for v in a["suggestions"] %}
+            <dt><dd>{{v['value']}}&emsp;{{v["description"]}}</dd></dt>
+        {% endfor %}
+    {% endfor %}
+  {% else %}
+    <dd> {{attr}} : {{ val }} </dd>
+  {% endif %}
 {% endfor %}
 </dl>
 

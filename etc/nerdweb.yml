@@ -34,6 +34,8 @@ menu_items:
 
 data_disk_path: "/data"
 
+port_info: "/etc/nerd/service-names-port-numbers.json" # gen from https://github.com/dianwoshishi/port2services
+
 login:
   methods:
     local:
@@ -85,8 +87,8 @@ rate-limit:
 # Connection parameters for IPVisualizator backend (used in map.html), which runs as a standalone service.
 # See https://github.com/CESNET/IPVisualizator for details about IPVisualizator
 ipmap:
-  url: https://map:8080/api/v1
-  token: "QkBE7J3-zy3URf-9U9rJ1g"
+  url: http://map:38080/api/v1
+  token: "y97F3T13VxsSJzK3cxwKUA"
 
 # (Optional) URL to find alert of an IP in Mentat ('$IP' is replaced by the IP)
 # Link is shown to users with "mentat" permission only.

@@ -32,7 +32,7 @@ import signal
 from OTXv2 import OTXv2
 
 # Set modified_since to this number of days if otx_last_update.txt is not present.
-MAX_DATA_AGE_ON_FIRST_RUN = 180
+MAX_DATA_AGE_ON_FIRST_RUN = 90
 
 # Add to path the "one directory above the current file location" to find modules from "common"
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), '..')))
@@ -160,15 +160,23 @@ def process_pulses(pulses):
         ipv4_counter = 0
         ipv6_counter = 0
         indicators = pulse.get('indicators', [])
+        logger.info("{} IPs to process next ".format(len(indicators)))
         for indicator in indicators:
             if (indicator["type"] == "IPv4") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
                 ipv4_counter += 1
                 upsert_new_pulse(pulse, indicator)
-            # if (indicator["type"] == "IPv6") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
-            #     ipv6_counter += 1
-            #     upsert_new_pulse(pulse, indicator)
-        # logger.info("{}/{} done, pulse {}, {} IPv4 indicators && {} IPv6 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter, ipv6_counter))
-        logger.info("{}/{} done, pulse {}, {} IPv4 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter))
+                if ipv4_counter % 1000 == 0:
+                    logger.info("{}/{}/{} IPv4 done, pulse {}".format(ipv4_counter, len(indicators),len(pulses), pulse.get('id', "(no id?)")))
+
+            if (indicator["type"] == "IPv6") and (datetime.strptime(indicator['created'], '%Y-%m-%dT%H:%M:%S') >= time_for_upsert):
+                ipv6_counter += 1
+                upsert_new_pulse(pulse, indicator)
+                if ipv6_counter % 1000 == 0:
+                    logger.info("{}/{}/{} IPv6 done, pulse {}".format(ipv6_counter, len(indicators),len(pulses), pulse.get('id', "(no id?)")))
+        
+        
+        logger.info("{}/{} done, pulse {}, {} IPv4 indicators and {} IPv6 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter, ipv6_counter))
+        # logger.info("{}/{} done, pulse {}, {} IPv4 indicators added/updated".format(i+1, len(pulses), pulse.get('id', "(no id?)"), ipv4_counter))
 
 
 def get_new_pulses():

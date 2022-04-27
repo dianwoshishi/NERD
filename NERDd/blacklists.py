@@ -239,6 +239,8 @@ if __name__ == "__main__":
             id = bl['id']
             name = bl['name']
             url = bl['url']
+            if url == None:
+                continue
             regex = bl.get('regex', '')
             refresh_time = bl['time']
             other_params = bl.get('params', {})
@@ -257,6 +259,8 @@ if __name__ == "__main__":
             id = bl['id']
             name = bl['name']
             url = bl['url']
+            if url == None:
+                continue
             regex = bl.get('regex', '')
             refresh_time = bl['time']
             other_params = bl.get('params', {})
