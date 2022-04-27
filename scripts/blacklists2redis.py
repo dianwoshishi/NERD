@@ -123,6 +123,8 @@ def compile_regex(regex):
     if "\\P" in regex:
         # replace "special" configuration character for IP or CIDR
         regex = regex.replace("\\P", "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\/\d{1,2})?")
+    if "\\P64" in regex:
+        regex = regex.replace("\\P64", "((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){6}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|::([\da-fA-F]{1,4}:){0,4}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:):([\da-fA-F]{1,4}:){0,3}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){2}:([\da-fA-F]{1,4}:){0,2}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){3}:([\da-fA-F]{1,4}:){0,1}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){4}:((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}|:((:[\da-fA-F]{1,4}){1,6}|:)|[\da-fA-F]{1,4}:((:[\da-fA-F]{1,4}){1,5}|:)|([\da-fA-F]{1,4}:){2}((:[\da-fA-F]{1,4}){1,4}|:)|([\da-fA-F]{1,4}:){3}((:[\da-fA-F]{1,4}){1,3}|:)|([\da-fA-F]{1,4}:){4}((:[\da-fA-F]{1,4}){1,2}|:)|([\da-fA-F]{1,4}:){5}:([\da-fA-F]{1,4})?|([\da-fA-F]{1,4}:){6}:")
     return re.compile(regex)
 
 
@@ -139,10 +141,10 @@ def parse_bl_with_regex(bl_data, bl_type, cregex):
             try:
                 if "/" in bl_data[record_start:record_end] and bl_type == "prefixIP":
                     # range IP blacklist
-                    bl_records.append(ipaddress.IPv4Network(bl_data[record_start:record_end]))
+                    bl_records.append(ipaddress.ip_network(bl_data[record_start:record_end]))
                 elif bl_type == "ip":
                     # classic IP address blacklist
-                    bl_records.append(str(ipaddress.IPv4Address(bl_data[record_start:record_end])))
+                    bl_records.append(str(ipaddress.ip_address(bl_data[record_start:record_end])))
                 else:
                     # domain blacklist
                     bl_records.append(bl_data[record_start:record_end])
@@ -155,21 +157,24 @@ def parse_bl_with_regex(bl_data, bl_type, cregex):
                 # there may be two groups for capturing start IP and end IP of prefix IP BL, depends on BL format
                 try:
                     if cregex.groups == 2 and bl_type == "prefixIP":
-                        range_start = ipaddress.IPv4Address(match.group(1))
-                        range_end = ipaddress.IPv4Address(match.group(2))
+                        range_start = ipaddress.ip_address(match.group(1))
+                        range_end = ipaddress.ip_address(match.group(2))
                         # save in cidr notation to later better handle prefix overlaps
                         prefix_in_cidr = [ipaddr for ipaddr in
                                           ipaddress.summarize_address_range(range_start, range_end)]
                         bl_records += prefix_in_cidr
                     else:
-                        if "/" in match.group(1) and bl_type == "prefixIP":
+                        if "/" in match.group(1) and bl_type == "prefixIP": # XXX fix me
                             # prefix BL in CIDR format, get ip_network instance, which creates list of included IP
                             # addresses
-                            prefix_network = ipaddress.IPv4Network(match.group(1))
+                            prefix_network = ipaddress.ip_network(match.group(1))
                             bl_records.append(prefix_network)
                         else:
+                            if '/' in match.group(1):
+                                log.error(f"prefix {match.group(1)} in blacklist ")
+                                continue
                             bl_records.append(match.group(1) if bl_type == "domain" else str(
-                                ipaddress.IPv4Address(match.group(1))))
+                                ipaddress.ip_address(match.group(1))))
                 except ipaddress.AddressValueError:
                     continue
     return bl_records
@@ -182,7 +187,7 @@ def parse_bl_without_regex(bl_data, bl_type):
         all_data = [line.strip() for line in bl_data.split('\n') if not line.startswith('#') and line.strip()]
         for ip in all_data:
             try:
-                prefix_network = ipaddress.IPv4Network(ip)
+                prefix_network = ipaddress.ip_network(ip)
             except ipaddress.AddressValueError:
                 continue
             bl_records.append(prefix_network)
@@ -193,7 +198,7 @@ def parse_bl_without_regex(bl_data, bl_type):
         if bl_type == "ip":
             for record in bl_records_non_validated:
                 try:
-                    ipaddr = ipaddress.IPv4Address(record)
+                    ipaddr = ipaddress.ip_address(record)
                 except ipaddress.AddressValueError:
                     continue
                 bl_records.append(str(ipaddr))

@@ -12,6 +12,7 @@ import requests
 import re
 from apscheduler.schedulers.blocking import BlockingScheduler
 from apscheduler.triggers.cron import CronTrigger
+# https://docs.python.org/3/library/ipaddress.html
 import ipaddress
 
 
@@ -42,6 +43,7 @@ bl_all_types = {
 
 ###############################################################################
 
+# ipv4/ipv6 regex :https://www.w3cschool.cn/notebook/notebook-jghl2tn5.html
 def compile_regex(regex):
     if "\\A" in regex:
         # replace "special" configuration character for IP address
@@ -52,6 +54,8 @@ def compile_regex(regex):
     if "\\P" in regex:
         # replace "special" configuration character for IP or CIDR
         regex = regex.replace("\\P", "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\/\d{1,2})?")
+    if "\\P64" in regex:
+        regex = regex.replace("\\P64", "((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){6}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|::([\da-fA-F]{1,4}:){0,4}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:):([\da-fA-F]{1,4}:){0,3}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){2}:([\da-fA-F]{1,4}:){0,2}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){3}:([\da-fA-F]{1,4}:){0,1}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){4}:((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}|:((:[\da-fA-F]{1,4}){1,6}|:)|[\da-fA-F]{1,4}:((:[\da-fA-F]{1,4}){1,5}|:)|([\da-fA-F]{1,4}:){2}((:[\da-fA-F]{1,4}){1,4}|:)|([\da-fA-F]{1,4}:){3}((:[\da-fA-F]{1,4}){1,3}|:)|([\da-fA-F]{1,4}:){4}((:[\da-fA-F]{1,4}){1,2}|:)|([\da-fA-F]{1,4}:){5}:([\da-fA-F]{1,4})?|([\da-fA-F]{1,4}:){6}:")
     return re.compile(regex)
 
 
@@ -67,14 +71,19 @@ def parse_bl_with_regex(bl_data, cregex):
             record_end = ip_match.span()[1]
             try:
                 # classic IP address blacklist
-                bl_records.append(str(ipaddress.IPv4Address(bl_data[record_start:record_end])))
+                bl_records.append(str(ipaddress.ip_address(bl_data[record_start:record_end])))
             except ipaddress.AddressValueError:
                 continue
     else:
         for line in bl_data.split('\n'):
             match = cregex.search(line)
             if match:
-                bl_records.append(str(ipaddress.IPv4Address(match.group(1))))
+                ip = match.group(1)
+                if '/' in ip: # 不处理前缀
+                    log.warning(f"prefix {ip} in blacklist ")
+                    continue               
+                bl_records.append(str(ipaddress.ip_address(ip)))
+                
     return bl_records
 
 
@@ -86,7 +95,10 @@ def parse_bl_without_regex(bl_data):
                                 line.strip() and not line.startswith("//")]
     for record in bl_records_non_validated:
         try:
-            ipaddr = ipaddress.IPv4Address(record)
+            if '/' not in record:
+                ipaddr = ipaddress.ip_address(record)
+            else:
+                log.error(f"prefix {record} in blacklist ")
         except ipaddress.AddressValueError:
             continue
         bl_records.append(str(ipaddr))
@@ -154,13 +166,13 @@ def get_blacklist(id, name, url, regex, bl_type, params):
     bl_records = parse_blacklist(data, bl_type, regex)
 
     download_time = datetime.utcnow()
-    now_plus_3days = download_time + timedelta(days=3)
+    now_plus_days = download_time + timedelta(days=30)
 
     log.info("{} IPs found, sending tasks to NERD workers".format(len(bl_records)))
 
     for ip in bl_records:
         task_queue_writer.put_task('ip', ip, [
-            ('setmax', '_ttl.bl', now_plus_3days),
+            ('setmax', '_ttl.bl', now_plus_days),
             ('array_upsert', 'bl', {'n': id},
                 [('set', 'v', 1), ('set', 't', download_time), ('append', 'h', download_time)])
         ], "blacklists")

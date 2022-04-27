@@ -112,8 +112,9 @@ iplists:
   descr: '<a href=https://getaddr.bitnodes.io/>BitNodes</a>  Bitcoin connected nodes, globally. . source url is https://getaddr.bitnodes.io/api/v1/snapshots/latest/ '
   firehol_link: http://iplists.firehol.org/?ipset=bitcoin_nodes
   provider_link: https://getaddr.bitnodes.io/
-  url: https://iplists.firehol.org/files/bitcoin_nodes.ipset
-  regex: "^(\\P)"
+  url: https://getaddr.bitnodes.io/api/v1/snapshots/latest/ 
+  # url: https://iplists.firehol.org/files/bitcoin_nodes.ipset
+  regex: "(\\P64)"
   time:
     hour: "*/4"
     minute: 2
@@ -208,8 +209,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  IPs that have been detected by fail2ban in the last 48 hours . source url is http://lists.blocklist.de/lists/all.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de.ipset
+  url: http://lists.blocklist.de/lists/all.txt 
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 6
@@ -232,8 +234,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  All IP addresses which have been reported within the last 48 hours as having run attacks on the service Apache, Apache-DDOS, RFI-Attacks. . source url is http://lists.blocklist.de/lists/apache.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de_apache
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de_apache.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de_apache.ipset
+  url: http://lists.blocklist.de/lists/apache.txt 
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 7
@@ -256,8 +259,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  All IP addresses which have been reported within the last 48 hours as having run attacks on the RFI-Attacks, REG-Bots, IRC-Bots or BadBots (BadBots = it has posted a Spam-Comment on a open Forum or Wiki) . . source url is http://lists.blocklist.de/lists/bots.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de_bots
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de_bots.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de_bots.ipset
+  url: http://lists.blocklist.de/lists/bots.txt 
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 8
@@ -280,8 +284,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  All IPs which attacks Joomla, Wordpress and other Web-Logins with Brute-Force Logins. . source url is http://lists.blocklist.de/lists/bruteforcelogin.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de_bruteforce
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de_bruteforce.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de_bruteforce.ipset
+  url: http://lists.blocklist.de/lists/bruteforcelogin.txt
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 9
@@ -304,8 +309,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  All IP addresses which have been reported within the last 48 hours for attacks on the Service FTP. . source url is http://lists.blocklist.de/lists/ftp.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de_ftp
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de_ftp.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de_ftp.ipset
+  url: http://lists.blocklist.de/lists/ftp.txt 
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 10
@@ -328,8 +334,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  All IP addresses which have been reported within the last 48 hours as having run attacks on the service Mail, Postfix. . source url is http://lists.blocklist.de/lists/mail.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de_mail
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de_mail.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de_mail.ipset
+  url: http://lists.blocklist.de/lists/mail.txt
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 11
@@ -376,8 +383,9 @@ iplists:
   descr: '<a href=https://www.blocklist.de/>Blocklist.de</a>  All IP addresses which have been reported within the last 48 hours as having run attacks on the service SSH. . source url is http://lists.blocklist.de/lists/ssh.txt '
   firehol_link: http://iplists.firehol.org/?ipset=blocklist_de_ssh
   provider_link: https://www.blocklist.de/
-  url: https://iplists.firehol.org/files/blocklist_de_ssh.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/blocklist_de_ssh.ipset
+  url: http://lists.blocklist.de/lists/ssh.txt
+  regex: "^(\\P64)"
   time:
     hour: "*/4"
     minute: 13
@@ -1600,8 +1608,9 @@ iplists:
   descr: '<a href=http://www.myip.ms/info/about>myip.ms</a>  IPs identified as web bots in the last 10 days, using several sites that require human action . source url is http://www.myip.ms/files/blacklist/csf/latest_blacklist.txt '
   firehol_link: http://iplists.firehol.org/?ipset=myip
   provider_link: http://myip.ms/
-  url: https://iplists.firehol.org/files/myip.ipset
-  regex: "^(\\P)"
+  # url: https://iplists.firehol.org/files/myip.ipset
+  url: http://www.myip.ms/files/blacklist/csf/latest_blacklist.txt 
+  regex: "^(\\P64)"
   time:
     hour: "5"
     minute: 4
@@ -2568,6 +2577,25 @@ iplists:
 
 
 # 104 blacklist process done
+- id: tor_exit_nodes
+  name: Tor exit nodes
+  descr: "REFERENCE https://lists.fissionrelays.net/tor/exits.txt"
+  provider_link: https://fissionrelays.net/
+  url: https://lists.fissionrelays.net/tor/exits.txt
+  regex: "^(\\P64)"
+  time:
+    hour: "5"
+    minute: 11 
+
+- id: tor_relay_nodes
+  name: Tor exit nodes
+  descr: "REFERENCE https://lists.fissionrelays.net/tor/exits.txt"
+  provider_link: https://fissionrelays.net/
+  url: https://lists.fissionrelays.net/tor/relays.txt
+  regex: "^(\\P64)"
+  time:
+    hour: "5"
+    minute: 12
 
 # Same format as in normal iplists is used, except 'regex'. If the prefix is formatted as start and end of IP network,
 # then start of IP network should be caught as group 1 in regex and end of IP network should be caught as group 2
