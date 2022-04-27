@@ -350,8 +350,14 @@ class WhoIS(NERDModule):
 
         # ** BGP prefixes and ASNs **
         # Perform query to whois.cymru.com server to get BGP prefix and list of ASNs
-        reverse_ip = ".".join(ip.split(".")[::-1])
-        query = reverse_ip + ".origin.asn.cymru.com"
+        if IPy.IP(ip).version() == 4:
+            reverse_ip = ".".join(ip.split(".")[::-1])
+            query = reverse_ip + ".origin.asn.cymru.com"
+            actions.append(('set', 'ipversion', "4"))
+        else:
+            reverse_ip = ".".join([x for x in str(IPy.IP(ip).strHex())[2:][::-1]])
+            query = reverse_ip + ".origin6.asn.cymru.com"
+            actions.append(('set', 'ipversion', "6"))
         try:
             resp_list = self.dnsresolver.query(query, "TXT").rrset
             # Expected format of response (may be multiple lines):

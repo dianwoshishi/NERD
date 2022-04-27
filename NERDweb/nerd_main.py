@@ -20,6 +20,8 @@ import dateutil.parser
 import pymisp
 from pymisp import ExpandedPyMISP
 from ipaddress import IPv4Address, AddressValueError
+# from IPy import IPint
+import IPy
 from event_count_logger import EventCountLogger, EventGroup, DummyEventGroup
 
 # Add to path the "one directory above the current file location"
@@ -258,7 +260,10 @@ def misp_sightings_to_str(sightings):
 
 def is_ip_address(value):
     try:
-        _ = IPv4Address(value)
+        # _ = IPv4Address(value)
+        res = IPy.IP(s)
+        if res is None:
+            raise ValueError('Invalid IP format: {!r}'.format(s))
         return True
     except AddressValueError:
         return False
@@ -276,7 +281,10 @@ def misp_contains_ip_address(value, attrib_type, get_rest=False):
         try:
             # if domain in attribute's type, the type is domain|ip, so ip is on index 1, else it is ip-src|port or
             # ip-dst|port
-            _ = IPv4Address(value.split('|')[1] if "domain" in attrib_type else value.split('|')[0])
+            # _ = IPv4Address(value.split('|')[1] if "domain" in attrib_type else value.split('|')[0])
+            _ = IPy.IP(value.split('|')[1] if "domain" in attrib_type else value.split('|')[0])
+            if res is None:
+                raise ValueError('Invalid IP format: {!r}'.format(s))
             if "domain" in attrib_type:
                 return value.split('|')[1] if not get_rest else value.split('|')[0]
             else:
@@ -284,7 +292,8 @@ def misp_contains_ip_address(value, attrib_type, get_rest=False):
         except AddressValueError:
             try:
                 # ':' appears only in ip-src|port or ip-dst|port, there is position of ip address in string strict
-                _ = IPv4Address(value.split(':')[0])
+                # _ = IPv4Address(value.split(':')[0])
+                _ = IPy.IP(value.split(':')[0])
                 return value.split(':')[0] if not get_rest else value.split(':')[1]
             except AddressValueError:
                 return False
@@ -745,7 +754,8 @@ def get_tags():
 
 def subnet_validator(form, field):
     try:
-        ipaddress.IPv4Network(field.data, strict=False)
+        # ipaddress.IPv4Network(field.data, strict=False)
+        IPy.IP(field.data)
     except ValueError:
         raise validators.ValidationError()
 
@@ -816,10 +826,13 @@ def create_query(form):
     # Prepare 'find' part of the query
     queries = []
     if form.subnet.data:
-        subnet = ipaddress.IPv4Network(form.subnet.data, strict=False)
+        # subnet = ipaddress.IPv4Network(form.subnet.data, strict=False)
+        subnet = IPy.IP(form.subnet.data, make_net=True)
         form.subnet.data = str(subnet) # Convert to canonical form (e.g. 1.2.3.4/16 -> 1.2.0.0/16)
-        subnet_start = int(subnet.network_address) # IP addresses are stored as int
-        subnet_end = int(subnet.broadcast_address)
+        # subnet_start = int(subnet.network_address) # IP addresses are stored as int
+        # subnet_end = int(subnet.broadcast_address)
+        subnet_start = str(IPy.IP(subnet[0]).int())
+        subnet_end = str(IPy.IP(subnet[-1]).int())
         queries.append( {'$and': [{'_id': {'$gte': subnet_start}}, {'_id': {'$lte': subnet_end}}]} )
     if form.hostname.data:
         hn = form.hostname.data[::-1] # Hostnames are stored reversed in DB to allow search by suffix as a range search
@@ -1013,7 +1026,7 @@ def feed(feedname=None):
 # ***** Detailed info about individual IP *****
 
 class SingleIPForm(FlaskForm):
-    ip = TextField('IP address', [validator_optional, validators.IPAddress(message="Invalid IPv4 address")], filters=[strip_whitespace])
+    ip = TextField('IP address', [validator_optional, validators.IPAddress(ipv4=True, ipv6=True, message="Invalid IP address")], filters=[strip_whitespace])
 
 @app.route('/ip/')
 @app.route('/ip/<ipaddr>')
@@ -1024,7 +1037,7 @@ def ip(ipaddr=None):
     if form.validate():
         ipaddr = form.ip.data # get IP back from Form to apply filters (strip whitespace).
     else:
-        flash('Invalid IPv4 address', 'error')
+        flash('Invalid IP address', 'error')
         ipaddr = None
     if ipaddr:
         if g.ac('ipsearch'):
@@ -1088,7 +1101,8 @@ def ajax_is_ip_prepared(ipaddr):
     if not g.ac('ipsearch'):
         return make_response('ERROR: Insufficient permissions')
     try:
-        ipaddress.IPv4Address(ipaddr)
+        # ipaddress.IPv4Address(ipaddr)
+        IPy.IP(ipaddr)
     except AddressValueError:
         log_err.log('400_bad_request')
         return Response(json.dumps({'err_n' : 400, 'error' : "Invalid IP address"}), 400, mimetype='application/json')
@@ -1222,7 +1236,7 @@ def asn(asn=None): # Can't be named "as" since it's a Python keyword
 # ***** Detailed info about individual IP block *****
 
 # class SingleIPBlockForm(FlaskForm):
-#     ip = TextField('IP block')#, [validators.IPAddress(message="Invalid IPv4 address")])
+#     ip = TextField('IP block')#, [validators.IPAddress(message="Invalid IP address")])
 
 @app.route('/ipblock/')
 @app.route('/ipblock/<ipblock>')
@@ -1640,7 +1654,8 @@ def get_ip_rep(ipaddr=None):
 
     # Check validity of ipaddr
     try:
-        ipaddress.IPv4Address(ipaddr)
+        # ipaddress.IPv4Address(ipaddr)
+        IPy.IP(ipaddr)
     except ValueError:
         log_err.log('400_bad_request')
         data = {'err_n': 400, 'error': 'Bad IP address'}
@@ -1672,7 +1687,8 @@ def get_ip_fmp(ipaddr=None):
 
     # Check validity of ipaddr
     try:
-        ipaddress.IPv4Address(ipaddr)
+        # ipaddress.IPv4Address(ipaddr)
+        IPy.IP(ipaddr)
     except ValueError:
         log_err.log('400_bad_request')
         data = {'err_n': 400, 'error': 'Bad IP address'}
@@ -1845,7 +1861,8 @@ def prefix(prefix, length):
     
     # Check parameters
     try:
-        network = ipaddress.IPv4Network(prefix + '/' + length, strict=False)
+        # network = ipaddress.IPv4Network(prefix + '/' + length, strict=False)
+        network = IPy.IP(prefix + '/' + length)
     except ValueError:
         log_err.log('400_bad_request')
         err['err_n'] = 400
@@ -1858,8 +1875,10 @@ def prefix(prefix, length):
         return Response(json.dumps(err), 400, mimetype='application/json')
     
     # Get list of all IPs from DB matching the prefix
-    int_prefix_start = int(network.network_address)
-    int_prefix_end = int(network.broadcast_address)
+    # int_prefix_start = int(network.network_address)
+    # int_prefix_end = int(network.broadcast_address)
+    int_prefix_start = str(IPy.IP(ip[0]).int())
+    int_prefix_end = str(IPy.IP(ip[-1]).int())
     query = {'$and': [{'_id': {'$gte': int_prefix_start}}, {'_id': {'$lt': int_prefix_end}}]}
     try:
         results = mongo.db.ip.find(query)
@@ -1878,7 +1897,8 @@ def prefix(prefix, length):
         ips.append(int2ipstr(rec['_id']))
 
     result = {
-        'rep': sum_rep / network.num_addresses,
+        # 'rep': sum_rep / network.num_addresses,
+        'rep': sum_rep / network.len(),
         'num_ips': len(results),
         'ips': ips,
     }

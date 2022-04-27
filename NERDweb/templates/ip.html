@@ -34,7 +34,7 @@
 {# Note: The onsubmit script overrides funcionality of Submit button to put IP address to custom URL #}
 <form id="ip_form" onsubmit="window.location='{{ url_for('ip') }}'+$('#ip_form #ip').val(); return false;">
   {# form.csrf_token #}
-  {{ form.ip.label }} {{ form.ip(size=30) }}
+  {{ form.ip.label }} {{ form.ip(size=50) }}
   <input type="submit">
 </form>
 
