@@ -9,6 +9,7 @@ author: Wang Ming(dianwoshishi.sina.com)
 
 from core.basemodule import NERDModule
 import g
+import logging
 import math
 
 import datetime
@@ -35,6 +36,7 @@ class Score(NERDModule):
     decay_factor = 1
 
     def __init__(self):
+        self.log = logging.getLogger("Scoremodule")
         g.um.register_handler(
             self.estimate_reputation, # function (or bound method) to call
             'ip', # entity type
@@ -95,9 +97,13 @@ class Score(NERDModule):
         
         decay_score = self.decay(maxdate_delta)
 
-        last_days = maxdate_delta -  mindate_delta# last time 
+        last_days = mindate_delta -  maxdate_delta# last time 
+        if last_days < 0:
+            last_days = -last_days
+        # self.log.info(f"{last_days}")
 
-        score = decay_score * math.log2((reports/targets))
+        score = decay_score * math.log2(1+(reports/(last_days+1)))
+
         return score
 
 

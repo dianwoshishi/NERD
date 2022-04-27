@@ -25,6 +25,9 @@ hr {
 	font-family: inherit;
 	font-size: 1.0em;
 }
+.center {
+    text-align:center;
+}
 
 .ui-tooltip {
   padding: 0.25em 0.4em;
