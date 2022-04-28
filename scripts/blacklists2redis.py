@@ -99,11 +99,15 @@ def download_blacklist(blacklist_url, params={}):
     if blacklist_url.startswith("http://") or blacklist_url.startswith("https://"):
         data = None
         try:
-            resp = requests.get(blacklist_url, params=params.get('url_params'), headers=params.get('headers'))
+            resp = requests.get(blacklist_url, params=params.get('url_params'), headers=params.get('headers'), timeout=(10, 30))
             return resp.content.decode('utf-8', 'ignore')
-        except requests.exceptions.ConnectionError as e:
+        # except requests.exceptions.ConnectionError as e:
+        #     print("ERROR: Can't download list '{}' from '{}': {}".format(id, blacklist_url, str(e)))
+        #     return ""
+        except Exception as e:
             print("ERROR: Can't download list '{}' from '{}': {}".format(id, blacklist_url, str(e)))
-            return ""
+            return "" 
+            
     # Load from local file
     elif blacklist_url.startswith("file://"):
         with open(blacklist_url[7:], encoding='utf-8', errors='ignore') as f:
@@ -123,8 +127,8 @@ def compile_regex(regex):
     if "\\P" in regex:
         # replace "special" configuration character for IP or CIDR
         regex = regex.replace("\\P", "[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}(\/\d{1,2})?")
-    if "\\P64" in regex:
-        regex = regex.replace("\\P64", "((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){6}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|::([\da-fA-F]{1,4}:){0,4}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:):([\da-fA-F]{1,4}:){0,3}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){2}:([\da-fA-F]{1,4}:){0,2}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){3}:([\da-fA-F]{1,4}:){0,1}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){4}:((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}|:((:[\da-fA-F]{1,4}){1,6}|:)|[\da-fA-F]{1,4}:((:[\da-fA-F]{1,4}){1,5}|:)|([\da-fA-F]{1,4}:){2}((:[\da-fA-F]{1,4}){1,4}|:)|([\da-fA-F]{1,4}:){3}((:[\da-fA-F]{1,4}){1,3}|:)|([\da-fA-F]{1,4}:){4}((:[\da-fA-F]{1,4}){1,2}|:)|([\da-fA-F]{1,4}:){5}:([\da-fA-F]{1,4})?|([\da-fA-F]{1,4}:){6}:")
+    if "\\IP64" in regex:
+        regex = regex.replace("\\IP64", "((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){6}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|::([\da-fA-F]{1,4}:){0,4}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:):([\da-fA-F]{1,4}:){0,3}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){2}:([\da-fA-F]{1,4}:){0,2}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){3}:([\da-fA-F]{1,4}:){0,1}((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){4}:((25[0-5]|2[0-4]\d|[01]?\d\d?)\.){3}(25[0-5]|2[0-4]\d|[01]?\d\d?)|([\da-fA-F]{1,4}:){7}[\da-fA-F]{1,4}|:((:[\da-fA-F]{1,4}){1,6}|:)|[\da-fA-F]{1,4}:((:[\da-fA-F]{1,4}){1,5}|:)|([\da-fA-F]{1,4}:){2}((:[\da-fA-F]{1,4}){1,4}|:)|([\da-fA-F]{1,4}:){3}((:[\da-fA-F]{1,4}){1,3}|:)|([\da-fA-F]{1,4}:){4}((:[\da-fA-F]{1,4}){1,2}|:)|([\da-fA-F]{1,4}:){5}:([\da-fA-F]{1,4})?|([\da-fA-F]{1,4}:){6}:")
     return re.compile(regex)
 
 
@@ -171,7 +175,7 @@ def parse_bl_with_regex(bl_data, bl_type, cregex):
                             bl_records.append(prefix_network)
                         else:
                             if '/' in match.group(1):
-                                log.error(f"prefix {match.group(1)} in blacklist ")
+                                print(f"prefix {match.group(1)} in blacklist ")
                                 continue
                             bl_records.append(match.group(1) if bl_type == "domain" else str(
                                 ipaddress.ip_address(match.group(1))))
@@ -282,7 +286,7 @@ def save_blacklist_to_redis(bl_records, bl_id, bl_name, bl_type, prefix_bl_lengt
                                                                      else prefix_bl_length,
                                                                      bl_all_types[bl_type]['plural'], key_prefix))
     except redis.exceptions.ConnectionError as e:
-        print("ERROR: Can't connect to Redis DB ({}:{}): {}".format(redis_host, redis_port, str(e)), file=sys.stderr)
+        vprint("ERROR: Can't connect to Redis DB ({}:{}): {}".format(redis_host, redis_port, str(e)), file=sys.stderr)
 
 
 def get_blacklist(id, name, url, regex, bl_type, params):
@@ -299,6 +303,7 @@ def get_blacklist(id, name, url, regex, bl_type, params):
     vprint("Getting {} blacklist '{}' from '{}'".format(bl_all_types[bl_type]['singular'], id, url))
 
     data = download_blacklist(url, params)
+    vprint("{} blacklist '{}' from '{}' downloaded, processing".format(bl_all_types[bl_type]['singular'], id, url))
 
     bl_records, prefix_bl_length = parse_blacklist(data, bl_type, regex)
     save_blacklist_to_redis(bl_records, id, name, bl_type, prefix_bl_length)

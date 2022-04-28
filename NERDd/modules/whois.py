@@ -358,6 +358,7 @@ class WhoIS(NERDModule):
             reverse_ip = ".".join([x for x in str(IPy.IP(ip).strHex())[2:][::-1]])
             query = reverse_ip + ".origin6.asn.cymru.com"
             actions.append(('set', 'ipversion', "6"))
+            self.log.info(' get an IPv6 address: {}.'.format(ip))
         try:
             resp_list = self.dnsresolver.query(query, "TXT").rrset
             # Expected format of response (may be multiple lines):

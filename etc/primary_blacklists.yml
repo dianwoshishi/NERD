@@ -718,7 +718,7 @@ iplists:
   provider_link: https://getaddr.bitnodes.io/
   url: https://getaddr.bitnodes.io/api/v1/snapshots/latest/ 
   # url: https://iplists.firehol.org/files/bitcoin_nodes.ipset
-  regex: "(\\P64)"
+  regex: "(\\IP64)"
   time:
     hour: "*/4"
     minute: 29
@@ -815,7 +815,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de.ipset
   url: http://lists.blocklist.de/lists/all.txt 
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 33
@@ -840,7 +840,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de_apache.ipset
   url: http://lists.blocklist.de/lists/apache.txt 
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 34
@@ -865,7 +865,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de_bots.ipset
   url: http://lists.blocklist.de/lists/bots.txt 
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 35
@@ -890,7 +890,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de_bruteforce.ipset
   url: http://lists.blocklist.de/lists/bruteforcelogin.txt
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 36
@@ -915,7 +915,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de_ftp.ipset
   url: http://lists.blocklist.de/lists/ftp.txt 
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 37
@@ -964,7 +964,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de_mail.ipset
   url: http://lists.blocklist.de/lists/mail.txt
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 39
@@ -1013,7 +1013,7 @@ iplists:
   provider_link: https://www.blocklist.de/
   # url: https://iplists.firehol.org/files/blocklist_de_ssh.ipset
   url: http://lists.blocklist.de/lists/ssh.txt
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "*/4"
     minute: 41
@@ -4734,7 +4734,7 @@ iplists:
   provider_link: http://myip.ms/
   # url: https://iplists.firehol.org/files/myip.ipset
   url: http://www.myip.ms/files/blacklist/csf/latest_blacklist.txt 
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "5"
     minute: 16
@@ -7483,7 +7483,7 @@ iplists:
   descr: "REFERENCE https://lists.fissionrelays.net/tor/exits.txt"
   provider_link: https://fissionrelays.net/
   url: https://lists.fissionrelays.net/tor/exits.txt
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "5"
     minute: 11 
@@ -7493,7 +7493,7 @@ iplists:
   descr: "REFERENCE https://lists.fissionrelays.net/tor/exits.txt"
   provider_link: https://fissionrelays.net/
   url: https://lists.fissionrelays.net/tor/relays.txt
-  regex: "^(\\P64)"
+  regex: "^(\\IP64)"
   time:
     hour: "5"
     minute: 12
