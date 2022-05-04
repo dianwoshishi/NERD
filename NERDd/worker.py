@@ -153,8 +153,8 @@ def main(cfg_file, process_index):
         modules.ttl_updater.TTLUpdater(),
         modules.score.Score(),
         # modules.refresher.Refresher(),
-        modules.otx.OTX(),
-        modules.shodan.Shodan(),
+        # modules.otx.OTX(),
+        # modules.shodan.Shodan(),
         modules.dshield.DShield(),
     ]
     
