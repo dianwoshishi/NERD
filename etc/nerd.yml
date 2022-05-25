@@ -7,6 +7,7 @@ record_life_length:
   warden: 14
   misp: 180
   otx: 30
+  dshield: 14
   highly_active: 14
   long_active: 28
 
@@ -96,11 +97,19 @@ warden_filer_path: "/data/warden_filer/warden_receiver"
   #verify_cert: my_misp_server_cert.crt
 
 
+
 # API key for Shodan requester
 shodan_api_key: "nFPFE0LlxJJqwa77rHFJ3naqME24S31A"
 
 # API key for OTX Alienvault pulses receiver
 otx_api_key: "d4d41cee3b8aab6da805fdf7a08de204dd940a3f81ff3b3d6ae4bca3c730b0ea"
+
+
+# DShield daily feeds. Only IPs with at least "min_reports" reported by at least "min_targets" are imported into NERD.
+dshield:
+  url: https://isc.sans.edu/feeds/daily_sources
+  min_reports: 10
+  min_targets: 3
 
 # (Optional) CESNET's Passive DNS (used by both web interface and passive_dns module)
 pdns:
