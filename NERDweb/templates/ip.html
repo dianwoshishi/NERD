@@ -26,6 +26,7 @@
     {%- for dt in bl_entry.h %}
       <span class="time" data-time="{{dt|date_to_int}}">{{dt|datetime('%Y-%m-%d %H:%M')}}</span>{{ ", " if not loop.last else "" }}
     {%- endfor %}
+
   </div>
 {%- endmacro %}
 
@@ -142,9 +143,33 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
    {% for bl_entry in ipinfo.bl %}
      {{ blacklist_tag_with_box(bl_entry, ip) }}
    {% endfor %}
-  </div></dd>
+   
+  </div>
+  <p class="caption">bl event timeline</p>
+  <div class="chart-container" style="position: relative; width: 100%; height: 20em">
+  <canvas id="plot-bl" width="100" height="100"></canvas>
+  <script>
+  let bl_data = {{ ipinfo.bl|tojson if ipinfo.bl else [] }};
+  $( function() {create_bl_graph('plot-bl', bl_data)} );
+  </script>
+</dd>
   {% set _ = ipinfo.pop('bl') %}
 {% endif %}
+
+{% if ipinfo.rep_history %}
+  <dt>Reputation History</dt>
+  <dd>
+  <p class="caption">reputation timeline</p>
+  <div class="chart-container" style="position: relative; width: 100%; height: 20em">
+  <canvas id="plot-rep" width="100" height="100"></canvas>
+  <script>
+  let rep_data = {{ ipinfo.rep_history|tojson if ipinfo.rep_history else [] }};
+  $( function() {create_rep_graph('plot-rep', rep_data)} );
+  </script>
+</dd>
+  {% set _ = ipinfo.pop('rep_history') %}
+{% endif %}
+
 {% if ipinfo.dbl %}
   <dt>Domain blacklists<span class="help" title="Blacklisted domain names that were associated with the IP address according to Passive DNS"></dt>
   <dd><div class="tag-list-container">
@@ -215,14 +240,26 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
 {# DShield events #}
 {% if ipinfo.dshield %}
   <dt>DShield reports <span style="font-weight: normal">(<a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a>, <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a>)</span></dt>
-  <dd><dl class="scrollable">
+  <dd>
+ {#      <dl class="scrollable">
     {% for rec in ipinfo.dshield %}
       <dt>{{ rec.date }}</dt>
       <dd>Number of reports: {{ rec.reports }}</dd>
       <dd>Distinct targets: {{ rec.targets }}</dd>
     {% endfor%}
-  </dl></dd>
+  </dl>
+  #}
+  <p class="caption">Dshield event timeline</p>
+  <div class="chart-container" style="position: relative; width: 100%; height: 20em">
+  <canvas id="plot-dshield" width="100" height="100"></canvas>
+  <script>
+  let dshield_data = {{ ipinfo.dshield|tojson if ipinfo.dshield else [] }};
+  $( function() {create_dshield_graph('plot-dshield', dshield_data)} );
+  </script>
+</dd>
+
   {% set _ = ipinfo.pop('dshield') %}
+
 {% endif %}
 
 {# OTX pulses #}
@@ -306,7 +343,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
   <dt>BGP Prefix</dt>
   <dd><a href="{{ url_for('bgppref') + val|replace('/','_') }}">{{ val }}</a></dd>
 
- {% elif attr == "dshield" %}
+ {# {% elif attr == "dshield" %}
     <dt>DShield - <a href="https://isc.sans.edu/ipdetails.html?ip={{ ip }}">reports</a>,<a href="https://isc.sans.edu/ipinfo.html?ip={{ ip }}">IP summary</a></dt>
         <dd><b>Number of reports: </b>{{ val.reports }}</dd>
         <dd><b>Distinct targets: </b>{{ val.targets }}</dd>
@@ -322,7 +359,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
         <dd><b>protocol:  </b>{{ val.protocol }}</dd>
         <dd><b>flags:  </b>{{ val.flags}}</dd>
         <dd><b>system latest update time:  </b>{{ val.update_time}}</dd>
-        
+#}   
 
  {% elif val|is_date %}
      <dt>{{ attr }}</dt><dd class="time" data-time={{ val|date_to_int }}>{{ val }}</dd>
@@ -352,7 +389,7 @@ Search at other sites: <a href="https://www.shodan.io/host/{{ ip }}" title="Sear
 
 </dl>
 
-{# Event plot -#}
+{# Event plot -
 <p class="caption">Warden event timeline</p>
 <div class="chart-container" style="position: relative; width: 100%; height: 20em">
 <canvas id="plot-events" width="100" height="100"></canvas>
@@ -361,6 +398,7 @@ let event_data = {{ warden_events|tojson if warden_events else [] }};
 $( function() {create_event_graph('plot-events', event_data)} );
 </script>
 </div>
+#}
 
 {% if ac('warden_alerts') %}
 <div id="events">

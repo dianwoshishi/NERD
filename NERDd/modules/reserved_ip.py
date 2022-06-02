@@ -63,12 +63,15 @@ class ReservedIPTags(NERDModule):
         for ip_prefix in ReservedIPTags.reserved_ip_prefix_list:
             if key.startswith(ip_prefix):
                 # tag it, set 1 as True, because IP is in reserved range
-                return [('set', 'reserved_range', 1)]
+                g.um.update(('ip', key), [('set', 'reserved_range', 1)])
+                return None
         else:
             for re_ip in ReservedIPTags.reserved_ip_re_list:
                 if re_ip.search(key):
                     # tag it, set 1 as True, because IP is in reserved range
-                    return [('set', 'reserved_range', 1)]
+                    g.um.update(('ip', key), [('set', 'reserved_range', 1)])
+                    return None
 
+        g.um.update(('ip', key), [('set', 'reserved_range', 0)])
+        return None
         # set 0 as False, because IP is not in reserved range
-        return [('set', 'reserved_range', 0)]

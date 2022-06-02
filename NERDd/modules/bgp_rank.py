@@ -86,7 +86,10 @@ class CIRCL_BGPRank(NERDModule):
             self.log.error("Can't get BGPRank of ASN {}: {}:{}".format(query, headers, e))
             return None             # could be connection error etc.
         
-        return [('set', 'circl_bgprank', rank),('set', 'asn_description', asn_description),('set', 'position', pos), ('set', 'total_know_asns', total_known_asns)]
+
+        g.um.update(('ip', key), [('set', 'circl_bgprank', rank),('set', 'asn_description', asn_description),('set', 'position', pos), ('set', 'total_know_asns', total_known_asns)])
+
+        return None
 if __name__ == '__main__':
     bgprank = CIRCL_BGPRank()
     ret = bgprank.set_bgprank((asn, 4538), [], [])

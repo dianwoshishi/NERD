@@ -696,6 +696,7 @@ class UpdateManager:
 #            t_handler1 = time.time()
             try:
                 reqs = func((etype, eid), rec, updates)
+                # self.log.info("{}(({}, {}), rec, {})".format(get_func_name(func), etype, eid, updates) )
             except Exception as e:
                 self.log.exception("Unhandled exception during call of {}(({}, {}), rec, {}). Traceback follows:"
                     .format(get_func_name(func), etype, eid, updates) )

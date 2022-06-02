@@ -237,4 +237,7 @@ class DNSBLResolver(NERDModule):
                     actions.append( ('array_update', 'bl', {'n': blname}, [('set', 'v', 0), ('set', 't', req_time)]) )
                     # Note: array_update change the record only if the matching element is there, if the IP wasn't on the blacklist before, it does nothing
         
-        return actions
+        
+
+        g.um.update(('ip', key), actions)
+        return None

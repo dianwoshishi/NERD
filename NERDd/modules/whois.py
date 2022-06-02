@@ -306,6 +306,7 @@ class WhoIS(NERDModule):
 
         return actions
 
+
     def checkIPBlock(self, ekey, rec, updates):
         etype, ipblock = ekey
         if etype != 'ipblock':
@@ -319,6 +320,7 @@ class WhoIS(NERDModule):
 
         return actions
 
+
     def checkOrg(self, ekey, rec, updates):
         etype, org = ekey
         if etype != 'org':
@@ -329,6 +331,7 @@ class WhoIS(NERDModule):
             actions.append(('event', '!DELETE'))
 
         return actions
+
     def check_cloudips(self, ip):
         for item in self.cloudips_dict.keys():
             if ip in item:
@@ -408,7 +411,9 @@ class WhoIS(NERDModule):
         # Get IP block from IANA list
         ip_block_data, reserved = self.findIPBlockData(ip)
         if ip_block_data == None:
-            return actions
+            g.um.update(('ip', ip), actions)
+            return None
+
 
         if cymru_ok and ip_block_data['rir'] != cymru_rir:
             self.log.warning('RIRs according to IANA and asn.cymru.com doesn\'t match for ip {}. IANA: "{}", Cymru: "{}" (using the IANA one)'.format(ip, ip_block_data['rir'], cymru_rir))
@@ -421,17 +426,22 @@ class WhoIS(NERDModule):
 
         # Create new IP block record (if not already present).
         g.um.update(('ipblock', inet), [('add', '_ref_cnt', 1)])
-        return actions
+        g.um.update(('ip', ip), actions)
+        return None
+
 
     def getBGPPrefInfo(self, ekey, rec, updates):
         etype, bgp_pref = ekey
         if etype != 'bgppref':
             return None
 
+
+
         actions = []
         actions.append(('set', 'rep', 0))
 
         return actions
+
 
     def getASNInfo(self, ekey, rec, updates):
         etype, asn = ekey
@@ -465,6 +475,7 @@ class WhoIS(NERDModule):
             if data_dict == None:
                 self.log.warning('Unable to find ASN: {} in RIR: {}. Aborting record creation.'.format(asn, rir))
                 return actions
+
         elif rir == 'arin':
             map_dict = {
                 'ASName' : 'name',
@@ -475,6 +486,7 @@ class WhoIS(NERDModule):
             if data_dict == None:
                 self.log.warning('Unable to find ASN: {} in RIR: {}. Aborting record creation.'.format(asn, rir))
                 return actions
+
         elif rir is not None:
             map_dict = {
                 'as-name' : 'name',
@@ -486,6 +498,7 @@ class WhoIS(NERDModule):
                 self.log.warning('Unable to find ASN: {} in RIR: {}. Aborting record creation.'.format(asn, rir))
                 return actions
 
+
         for key in data_dict.keys():
             if key == 'org':
                 # Create a new record of the organization, if not already present.
@@ -493,6 +506,7 @@ class WhoIS(NERDModule):
                 actions.append(('set', key, rir + ':' + data_dict[key]))
             else:
                 actions.append(('set', key, data_dict[key]))
+
         return actions
 
     def getBlockInfo(self, ekey, rec, updates):

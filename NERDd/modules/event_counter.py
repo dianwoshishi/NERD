@@ -104,7 +104,7 @@ class EventCounter(NERDModule):
             if days_diff < 7:
                 alerts_per_day[days_diff] += n;
 
-        return [
+        g.um.update(('ip', key), [
             ('set', 'events_meta.total1', total1),
             ('set', 'events_meta.total7', total7),
             ('set', 'events_meta.total30', total30),
@@ -113,5 +113,7 @@ class EventCounter(NERDModule):
             ('set', 'events_meta.nodes_30d', len(nodes30)),
             ('set', 'events_meta.ewma', sum(n*w for n,w in zip(alerts_per_day, EWMA_WEIGHTS))),
             ('set', 'events_meta.bin_ewma', sum((w if n else 0) for n,w in zip(alerts_per_day, EWMA_WEIGHTS)))
-        ]
+        ])
+        return None
+
 

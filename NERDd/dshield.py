@@ -85,6 +85,8 @@ def process_feed(feed_data):
             ips[ip_addr] = {"reports" : reports, "targets" : targets}
     
     logger.info(f"Creating tasks to update {len(ips)} IPs ...")
+    current_time = datetime.utcnow()
+    count = 0 # count the ip sent to mq 
     for ip_addr in ips:
         if (ips[ip_addr]["reports"] < min_reports) or (ips[ip_addr]["targets"] < min_targets):
             continue
@@ -93,11 +95,14 @@ def process_feed(feed_data):
                                              [('set', 'reports', ips[ip_addr]["reports"]),
                                               ('set', 'targets', ips[ip_addr]["targets"])]),
                                             ('setmax', '_ttl.dshield', ttl_date),
+                                            ('setmax', 'last_activity', current_time)
                                           ], "dshield")
+        count += 1
+    logger.info(f"updated {count} IPs ...")
     logger.info("Tasks created")
 
 def download_feed():
-    logger.info("Downloading feed ...")
+    logger.info(f"Downloading feed from {dshield_feed_url} ...")
     feed = urllib.request.urlopen(dshield_feed_url)
     if feed.getcode() == 200:
         feed_data = [line.decode() for line in feed.readlines() if not line.decode().startswith('#')]

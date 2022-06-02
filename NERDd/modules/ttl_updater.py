@@ -74,4 +74,6 @@ class TTLUpdater(NERDModule):
         new_updates = []
         self.check_high_activity(new_updates, rec)
         self.check_long_activity(new_updates, rec)
-        return new_updates
+
+        g.um.update(('ip', key), new_updates)
+        return None

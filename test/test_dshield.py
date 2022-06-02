@@ -36,7 +36,7 @@ class DShield():
         try:
             headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(5,7), headers=headers)
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,3), headers=headers)
             #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 print(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
