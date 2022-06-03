@@ -161,7 +161,9 @@ class RedisBlacklist(NERDModule):
         for bl in bl_to_remove:
             self.blacklists.remove(bl)
             
-        return actions
+        g.um.update(('ip', key), actions)
+
+        return None
 
 
 if __name__ == '__main__':

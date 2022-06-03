@@ -3,6 +3,7 @@
 <!-- custom script specific for this page -->
 <script src="{{ url_for('static', filename='ips.js') }}"></script>
 {% endblock %}
+
 {% block body %}
 
 <h1>Known IP addresses</h1>
@@ -59,6 +60,7 @@
 <tr>
 <th>IP address</th>
 <th>Hostname</th>
+<th title="prefix">Prefix</th>
 <th title="Autonomous system number and name">ASN</th>
 <th>Country</th>
 <th title="Total number of Warden alerts / nodes / categories (in last {{ cfg_max_event_history }} days), second line shows events from other sources">Events</th>
@@ -76,6 +78,11 @@
 <tr>
 <td class="id ip"><a href="{{ url_for('ip') + ip._id }}"><span>{{ip._id}}</span></a></td>
 <td class="hostname">{{ip['hostname']|reverse if ip['hostname'] else '--'}}</td>
+<td class="prefix"> 
+    {% if 'bgppref' in ip%}
+    <a href="{{ url_for('bgppref') + ip['bgppref']['_id']|replace('/','_') }}">{{ ip["bgppref"]["_id"] }}</a>
+    {% endif %}
+</td>
 <td class="asn">
   {% if 'asn' in ip%}
     {% for asn in ip['asn']%}
@@ -158,10 +165,14 @@
         {% endif %}
     </span>
   {% endif %}
+  {% if ip.dshield %}
+    <span class="tag" >{{ ip.dshield | length}} Dshield </span>
+  {% endif %}
 {#
   {% if ip.open_dns %}<span class="tag amplifier dns">Open DNS resolver</span>{% endif %}
   {% if ip.open_ntp %}<span class="tag amplifier ntp">Open NTP</span>{% endif %}
   {% if ip.open_snmp %}<span class="tag amplifier snmp">Open SNMP</span>{% endif %}
+  
 #}
 
   {% if ip.tags %}
@@ -187,13 +198,14 @@
                       {% set tlp_white_tag.showed = tlp_white_tag.showed + 1 %}
                   {% endif %}
               {% endfor %}
-          {% elif tag_id == "dshield" %}
+         <!-- {% elif tag_id == "dshield" %}
               {% if ip.dshield.targets == 0 %}  
                 <span class="tag" title="Dshield-NoRecord">Dshield-Empty</span>
               {% else %}
                 <span class="tag" style="{{ tag_color_style(config_tags[tag_id].tag_color, tag_param.confidence) }}" title="{% if "description" in config_tags[tag_id] %}<b>{{config_tags[tag_id].description}}</b><br /><br />{% endif %}{% if "info" in tag_param %}{{tag_param.info}}<br /><br />{% endif %}Confidence: <i>{{tag_param.confidence}}</i><br />Time added: <i>{{tag_param.time_added|datetime}}</i><br />Time modified: <i>{{tag_param.time_modified|datetime}}</i>">
                 {{config_tags[tag_id].name}} 
               {% endif %}
+               -->
           {% else %}
               <span class="tag" style="{{ tag_color_style(config_tags[tag_id].tag_color, tag_param.confidence) }}" title="{% if "description" in config_tags[tag_id] %}<b>{{config_tags[tag_id].description}}</b><br /><br />{% endif %}{% if "info" in tag_param %}{{tag_param.info}}<br /><br />{% endif %}Confidence: <i>{{tag_param.confidence}}</i><br />Time added: <i>{{tag_param.time_added|datetime}}</i><br />Time modified: <i>{{tag_param.time_modified|datetime}}</i>">
               {{config_tags[tag_id].name}}

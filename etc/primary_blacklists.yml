@@ -12,10 +12,10 @@
 #   regex to parse the file (should match on IP address) or empty if there are only IP addresses, one per line (lines beginning with '#' are ignored),
 #       or just fill regex with searching for IP, IP prefix or domain without group, if the whole blacklist is on one line or has multiple records on on line
 #       - you can use special substitutions for IP address or CIDR IP address
-#         - "//A" can be used for IP address, in interal part it will be substituted for IP regex
-#         - "//CA" can be used for CIDR prefix (192.168.0.0/16)
+#         - "\\A" can be used for IP address, in internal part it will be substituted for IP regex
+#         - "\\CA" can be used for CIDR prefix (192.168.0.0/16)
 #       IP address regex example, where IP address starts on every line:
-#         "^(//A)"
+#         "^(\\A)"
 #   refresh time (cron-like specification of when the list should be updated (in UTC), see https://apscheduler.readthedocs.io/en/latest/modules/triggers/cron.html for details)
 #   other params (optional)
 #
@@ -47,7 +47,7 @@ iplists:
   url: https://iplists.firehol.org/files/alienvault_reputation.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/8"
+    hour: "8"
     minute: 1
 
 
@@ -720,7 +720,7 @@ iplists:
   # url: https://iplists.firehol.org/files/bitcoin_nodes.ipset
   regex: "(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 29
 
 
@@ -744,7 +744,7 @@ iplists:
   url: https://iplists.firehol.org/files/bitcoin_nodes_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 30
 
 
@@ -768,7 +768,7 @@ iplists:
   url: https://iplists.firehol.org/files/bitcoin_nodes_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 31
 
 
@@ -792,7 +792,7 @@ iplists:
   url: https://iplists.firehol.org/files/bitcoin_nodes_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 32
 
 
@@ -817,7 +817,7 @@ iplists:
   url: http://lists.blocklist.de/lists/all.txt 
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 33
 
 
@@ -842,7 +842,7 @@ iplists:
   url: http://lists.blocklist.de/lists/apache.txt 
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 34
 
 
@@ -867,7 +867,7 @@ iplists:
   url: http://lists.blocklist.de/lists/bots.txt 
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 35
 
 
@@ -892,7 +892,7 @@ iplists:
   url: http://lists.blocklist.de/lists/bruteforcelogin.txt
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 36
 
 
@@ -917,7 +917,7 @@ iplists:
   url: http://lists.blocklist.de/lists/ftp.txt 
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 37
 
 
@@ -966,7 +966,7 @@ iplists:
   url: http://lists.blocklist.de/lists/mail.txt
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 39
 
 
@@ -990,7 +990,7 @@ iplists:
   url: https://iplists.firehol.org/files/blocklist_de_sip.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 40
 
 
@@ -1015,7 +1015,7 @@ iplists:
   url: http://lists.blocklist.de/lists/ssh.txt
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 41
 
 
@@ -1039,7 +1039,7 @@ iplists:
   url: https://iplists.firehol.org/files/blocklist_de_strongips.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 42
 
 
@@ -1063,7 +1063,7 @@ iplists:
   url: https://iplists.firehol.org/files/blocklist_net_ua.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 43
 
 
@@ -1087,7 +1087,7 @@ iplists:
   url: https://iplists.firehol.org/files/botscout.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 44
 
 
@@ -1111,7 +1111,7 @@ iplists:
   url: https://iplists.firehol.org/files/botscout_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 45
 
 
@@ -1135,7 +1135,7 @@ iplists:
   url: https://iplists.firehol.org/files/botscout_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 46
 
 
@@ -1159,7 +1159,7 @@ iplists:
   url: https://iplists.firehol.org/files/botscout_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 47
 
 
@@ -1255,7 +1255,7 @@ iplists:
   url: https://iplists.firehol.org/files/ciarmy.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 51
 
 
@@ -1831,7 +1831,7 @@ iplists:
   url: https://iplists.firehol.org/files/dm_tor.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 15
 
 
@@ -1855,7 +1855,7 @@ iplists:
   url: https://iplists.firehol.org/files/dshield.netset
   regex: "^(\\P)"
   time:
-    hour: "*/7"
+    hour: "7"
     minute: 16
 
 
@@ -1879,7 +1879,7 @@ iplists:
   url: https://iplists.firehol.org/files/dshield_1d.netset
   regex: "^(\\P)"
   time:
-    hour: "*/7"
+    hour: "7"
     minute: 17
 
 
@@ -1951,7 +1951,7 @@ iplists:
   url: https://iplists.firehol.org/files/dshield_top_1000.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 20
 
 
@@ -2839,7 +2839,7 @@ iplists:
   url: https://iplists.firehol.org/files/feodo.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/10"
+    hour: "10"
     minute: 57
 
 
@@ -2887,7 +2887,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_abusers_1d.netset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 59
 
 
@@ -2911,7 +2911,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_abusers_30d.netset
   regex: "^(\\P)"
   time:
-    hour: "*/5"
+    hour: "5"
     minute: 0
 
 
@@ -2935,7 +2935,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_anonymous.netset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 1
 
 
@@ -2959,7 +2959,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_level1.netset
   regex: "^(\\P)"
   time:
-    hour: "*/5"
+    hour: "5"
     minute: 2
 
 
@@ -2983,7 +2983,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_level2.netset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 3
 
 
@@ -3007,7 +3007,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_level3.netset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 4
 
 
@@ -3031,7 +3031,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_level4.netset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 5
 
 
@@ -3055,7 +3055,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_proxies.netset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 6
 
 
@@ -3079,7 +3079,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_webclient.netset
   regex: "^(\\P)"
   time:
-    hour: "*/11"
+    hour: "11"
     minute: 7
 
 
@@ -3175,7 +3175,7 @@ iplists:
   url: https://iplists.firehol.org/files/greensnow.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 11
 
 
@@ -5816,7 +5816,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxylists.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 1
 
 
@@ -5840,7 +5840,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxylists_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 2
 
 
@@ -5864,7 +5864,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxylists_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 3
 
 
@@ -5888,7 +5888,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxylists_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 4
 
 
@@ -5912,7 +5912,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxz.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 5
 
 
@@ -5936,7 +5936,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxz_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 6
 
 
@@ -5960,7 +5960,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxz_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 7
 
 
@@ -5984,7 +5984,7 @@ iplists:
   url: https://iplists.firehol.org/files/proxz_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 8
 
 
@@ -6320,7 +6320,7 @@ iplists:
   url: https://iplists.firehol.org/files/socks_proxy.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 22
 
 
@@ -6344,7 +6344,7 @@ iplists:
   url: https://iplists.firehol.org/files/socks_proxy_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 23
 
 
@@ -6368,7 +6368,7 @@ iplists:
   url: https://iplists.firehol.org/files/socks_proxy_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 24
 
 
@@ -6392,7 +6392,7 @@ iplists:
   url: https://iplists.firehol.org/files/socks_proxy_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 25
 
 
@@ -6464,7 +6464,7 @@ iplists:
   url: https://iplists.firehol.org/files/sslbl.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/8"
+    hour: "8"
     minute: 28
 
 
@@ -6512,7 +6512,7 @@ iplists:
   url: https://iplists.firehol.org/files/sslproxies.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 30
 
 
@@ -6536,7 +6536,7 @@ iplists:
   url: https://iplists.firehol.org/files/sslproxies_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 31
 
 
@@ -6560,7 +6560,7 @@ iplists:
   url: https://iplists.firehol.org/files/sslproxies_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 32
 
 
@@ -6584,7 +6584,7 @@ iplists:
   url: https://iplists.firehol.org/files/sslproxies_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 33
 
 
@@ -6656,7 +6656,7 @@ iplists:
   url: https://iplists.firehol.org/files/stopforumspam_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 36
 
 
@@ -6896,7 +6896,7 @@ iplists:
   url: https://iplists.firehol.org/files/tor_exits_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/5"
+    hour: "5"
     minute: 46
 
 
@@ -6920,7 +6920,7 @@ iplists:
   url: https://iplists.firehol.org/files/tor_exits_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/6"
+    hour: "6"
     minute: 47
 
 
@@ -6944,7 +6944,7 @@ iplists:
   url: https://iplists.firehol.org/files/tor_exits_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/5"
+    hour: "5"
     minute: 48
 
 
@@ -7304,7 +7304,7 @@ iplists:
   url: https://iplists.firehol.org/files/voipbl.netset
   regex: "^(\\P)"
   time:
-    hour: "*/9"
+    hour: "9"
     minute: 3
 
 
@@ -7376,7 +7376,7 @@ iplists:
   url: https://iplists.firehol.org/files/xroxy.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 6
 
 
@@ -7400,7 +7400,7 @@ iplists:
   url: https://iplists.firehol.org/files/xroxy_1d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 7
 
 
@@ -7424,7 +7424,7 @@ iplists:
   url: https://iplists.firehol.org/files/xroxy_30d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/6"
+    hour: "6"
     minute: 8
 
 
@@ -7448,7 +7448,7 @@ iplists:
   url: https://iplists.firehol.org/files/xroxy_7d.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 9
 
 

@@ -228,7 +228,9 @@ class Tags(NERDModule):
                 ret.append(('remove', 'tags.' + tag_id))
                 self.log.debug("Tag {} has been deleted from record for IP {}.".format(tag_id,key))
 
-        return ret
+        g.um.update(('ip', key), ret)
+        return None
+
                 
 """
 Lexer

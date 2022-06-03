@@ -122,11 +122,11 @@ def main(cfg_file, process_index):
     import modules.passive_dns
     import modules.fmp
     import modules.reserved_ip
-    import modules.dshield
     import modules.ttl_updater
     import modules.otx
     import modules.score
     import modules.refresher
+    # import modules.dshield
     
     # Instantiate modules
     # TODO create all modules automatically (loop over all modules.* and find all objects derived from NERDModule)
@@ -151,11 +151,12 @@ def main(cfg_file, process_index):
         # modules.fmp.FMP(),
         modules.reserved_ip.ReservedIPTags(),
         modules.ttl_updater.TTLUpdater(),
+
         modules.score.Score(),
         # modules.refresher.Refresher(),
         # modules.otx.OTX(),
         # modules.shodan.Shodan(),
-        modules.dshield.DShield(),
+        # modules.dshield.DShield(),
     ]
     
     

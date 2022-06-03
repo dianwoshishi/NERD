@@ -177,6 +177,8 @@ if __name__ == "__main__":
         log.setLevel('DEBUG')
         logging.getLogger("apscheduler.scheduler").setLevel("INFO")
         logging.getLogger("apscheduler.executors.default").setLevel("INFO")
+    
+    log.setLevel('DEBUG')
 
     log.info("**** Updater started *****")
 

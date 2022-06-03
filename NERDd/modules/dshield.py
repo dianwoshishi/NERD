@@ -45,82 +45,14 @@ class DShield(NERDModule):
         g.um.register_handler(
             self.set_dshield,  # function (or bound method) to call
             'ip',                # entity type
-            ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
-            ('dshield.reports',
-             'dshield.targets',
-             'dshield.mindate',
-             'dshield.updated',
-             'dshield.maxdate',
-             'dshield.latest')    # latest update time
-        )
-        g.um.register_handler(
-            self.set_dshield_events,  # function (or bound method) to call
-            'ip',                # entity type
-            ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
-            ('dshield.sourceports',
-             'dshield.targetports',
-             'dshield.total_events',
-             'dshield.protocol',
-             'dshield.flags',
-             'dshield.update_time')    # latest update time
-        )
-
-    def set_dshield_events(self, ekey, rec, updates):
-        """
-        Gets data from DShield api, parses them and returns them.
-        """
-        etype, key = ekey
-
-        if etype != 'ip':
-            return None
-        try:
-            headers= {'user-agent':str(UserAgent().random)}
-            # get response from server
-            response = requests.get(f"{BASE_URL}/ipdetails/{key}?json", timeout=(5,7), headers=headers)
-            #self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
-            if response.text.startswith("<html><body>Too Many Requests"):
-                print(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
-                return None
-            data = json.loads(response.content.decode('utf-8'))
-            if len(data) == 0:
-            	return None
-            # {"date":"2022-04-17","time":"22:56:35","sourceport":64246,"targetport":587,"protocol":6,"flags":"A"}
-            event_record = {
-                'sourceports': 0,
-                'targetports': 0,
-               	'total_events':0,
-               	'protocol':set(),
-               	'flags':set(),
-                'update_time': "",
-            }
-            sourceports = set()
-            targetports = set()
-            protocol = set()
-            flags = set()
-            total_events = 0
-            for event in data:
-            	sourceports.add(event['sourceport'])
-            	targetports.add(event['targetport'])
-            	protocol.add(event['protocol'])
-            	flags.add(event['flags'])
-            	total_events += 1
-            
-            event_record['sourceports'] = len(sourceports)
-            event_record['targetports'] = len(targetports)
-            event_record['protocol'] = list(protocol)
-            event_record['flags'] = list(flags)
-            event_record['total_events'] = total_events
-            event_record['update_time'] = datetime.now().strftime("%Y-%m-%d, %H:%M:%S")
-
-            # print(key, json.dumps(event_record))
-
-        except Exception as e:
-            print(f"Can't get DShield data for IP {key}: {e}")
-            return None             # could be connection error etc.
-
-        
-        return [('set', 'dshield_events', event_record)]
-                
+            ('!NEW', '!every1w'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
+            ('dshield_total.reports',
+             'dshield_total.targets',
+             'dshield_total.mindate',
+             'dshield_total.updated',
+             'dshield_total.maxdate',
+             'dshield_total.latest')    # latest update time
+        )         
 
     def set_dshield(self, ekey, rec, updates):
         """
@@ -137,7 +69,7 @@ class DShield(NERDModule):
         try:
             headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(5,7), headers=headers)
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,3), headers=headers)
             self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")
@@ -177,4 +109,7 @@ class DShield(NERDModule):
 
         #self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
         self.success_count += 1
-        return [('set', 'dshield', dshield_record)]
+
+        
+        g.um.update(('ip', key), [('set', 'dshield_total', dshield_record)])
+        return None
