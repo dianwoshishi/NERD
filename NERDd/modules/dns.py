@@ -33,7 +33,7 @@ class DNSResolver(NERDModule):
         g.um.register_handler(
             self.get_hostname, # function (or bound method) to call
             'ip', # entity type
-            ('!NEW','!refresh_hostname','!every1w'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
+            ('!NEW','!every1w'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
             ('hostname',) # tuple/list/set of attributes the method may change
         )
         
@@ -74,5 +74,6 @@ class DNSResolver(NERDModule):
         except DNSException as e:
             result = None # set result to None if NXDOMAIN, Timeout or other error
         
-        return [('set', 'hostname', result)]
+        g.um.update(('ip', key), [('set', 'hostname', result)])
+        return None
         

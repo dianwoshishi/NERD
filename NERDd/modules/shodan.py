@@ -158,4 +158,6 @@ class Shodan(NERDModule):
         
         self.log.debug("Shodan update requests for {}: {}".format(ip, update_requests))
         
-        return update_requests
+        
+        g.um.update(('ip', key), update_requests)
+        return None

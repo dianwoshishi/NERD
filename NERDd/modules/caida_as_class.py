@@ -123,4 +123,7 @@ class CaidaASclass(NERDModule):
                 ret.append(('set', 'caida_as_class.c', res["confidence"]))
         else:
              ret = [('set', 'caida_as_class.v', 'unknown')]
-        return ret
+
+        g.um.update(('ip', key), ret)
+
+        return None

@@ -115,7 +115,10 @@ class HostnameClass(NERDModule):
                     tags.append(tag)
         # TODO: hex in hostname, eg:pd9f74368.dip0.t-ipconnect.de
         if tags:
-            return [('set', 'hostname_class', tags)]
+            g.um.update(('ip', key), [('set', 'hostname_class', tags)])
+            
         else:
             # If hostname_class existed previously but no rule matches now, remove the key
-            return [('remove', 'hostname_class')] 
+            g.um.update(('ip', key), [('remove', 'hostname_class')] )
+            
+        return None

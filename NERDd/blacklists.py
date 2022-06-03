@@ -166,17 +166,18 @@ def get_blacklist(id, name, url, regex, bl_type, params):
     bl_records = parse_blacklist(data, bl_type, regex)
 
     download_time = datetime.utcnow()
-    now_plus_days = download_time + timedelta(days=30)
+    now_plus_days = download_time + timedelta(days=15)
 
     log.info("{} IPs found, sending tasks to NERD workers".format(len(bl_records)))
-
+    current_time = datetime.utcnow()
     for ip in bl_records:
         task_queue_writer.put_task('ip', ip, [
             ('setmax', '_ttl.bl', now_plus_days),
+            ('setmax', 'last_activity', current_time),
             ('array_upsert', 'bl', {'n': id},
                 [('set', 'v', 1), ('set', 't', download_time), ('append', 'h', download_time)])
         ], "blacklists")
-    log.info("{} IPs sendied to NERD workers".format(len(bl_records)))
+    log.info("{} IPs sent to NERD workers".format(len(bl_records)))
 
 
 def stop(signal, frame):

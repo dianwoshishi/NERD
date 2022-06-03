@@ -14,10 +14,10 @@ redis:
 #   regex to parse the file (should match on IP address) or empty if there are only IP addresses, one per line (lines beginning with '#' are ignored),
 #       or just fill regex with searching for IP, IP prefix or domain without group, if the whole blacklist is on one line or has multiple records on on line
 #       - you can use special substitutions for IP address or CIDR IP address
-#         - "//A" can be used for IP address, in interal part it will be substituted for IP regex
-#         - "//CA" can be used for CIDR prefix (192.168.0.0/16)
+#         - "\\A" can be used for IP address, in internal part it will be substituted for IP regex
+#         - "\\CA" can be used for CIDR prefix (192.168.0.0/16)
 #       IP address regex example, where IP address starts on every line:
-#         "^(//A)"
+#         "^(\\A)"
 #   refresh time (cron-like specification of when the list should be updated (in UTC), see https://apscheduler.readthedocs.io/en/latest/modules/triggers/cron.html for details)
 #   other params (optional)
 #
@@ -45,7 +45,7 @@ iplists:
   regex: "(\\IP64)"
   # The time of updating the list was not found
   time: 
-    hour: "*/4"
+    hour: "4"
     minute: 10 
 - id: dan_me_uk_ips
   name: dan.me.uk TOR Nodes
@@ -55,7 +55,7 @@ iplists:
   regex: "(\\IP64)"
   # The time of updating the list was viewed here: https://www.dan.me.uk/tornodes
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 10
 
 # Lists from FireHOL
@@ -116,7 +116,7 @@ iplists:
   # url: https://iplists.firehol.org/files/bitcoin_nodes.ipset
   regex: "(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 2
 
 # [attacks]blocklist_de by Blocklist.de.:<a href="https://www.blocklist.de/">Blocklist.de</a>  IPs that have been detected by fail2ban in the last 48 hours . source url is http://lists.blocklist.de/lists/all.txt 
@@ -140,7 +140,7 @@ iplists:
   url: http://lists.blocklist.de/lists/all.txt 
   regex: "^(\\IP64)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 6
 
 # [abuse]blocklist_net_ua by blocklist.net.ua.:<a href="https://blocklist.net.ua">blocklist.net.ua</a>  The BlockList project was created to become protection against negative influence of the harmful and potentially dangerous events on the Internet. First of all this service will help internet and hosting providers to protect subscribers sites from being hacked. BlockList will help to stop receiving a large amount of spam from dubious SMTP relays or from attempts of brute force passwords to servers and network equipment. . source url is https://blocklist.net.ua/blocklist.csv 
@@ -163,7 +163,7 @@ iplists:
   url: https://iplists.firehol.org/files/blocklist_net_ua.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 15
 
 
@@ -187,7 +187,7 @@ iplists:
   url: https://iplists.firehol.org/files/botscout.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 16
 
 # [attacks]botvrij_dst by botvrij.eu.:<a href="http://www.botvrij.eu/">botvrij.eu</a>  Indicators of Compromise (IOCS)  about malicious destination IPs, gathered via open source information feeds (blog pages and PDF documents)  and then consolidated into different datasets. To ensure the quality of the data all entries older than approx. 6 months are removed. . source url is http://www.botvrij.eu/data/ioclist.ip-dst.raw 
@@ -234,7 +234,7 @@ iplists:
   url: https://iplists.firehol.org/files/ciarmy.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 21
 
 
@@ -353,7 +353,7 @@ iplists:
   url: https://iplists.firehol.org/files/dm_tor.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 36
 
 
@@ -377,7 +377,7 @@ iplists:
   url: https://iplists.firehol.org/files/dshield.netset
   regex: "^(\\P)"
   time:
-    hour: "*/7"
+    hour: "7"
     minute: 37
 
 
@@ -496,7 +496,7 @@ iplists:
   url: https://iplists.firehol.org/files/firehol_webclient.netset
   regex: "^(\\P)"
   time:
-    hour: "*/11"
+    hour: "11"
     minute: 55
 
 
@@ -520,7 +520,7 @@ iplists:
   url: https://iplists.firehol.org/files/greensnow.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 57
 
 
@@ -759,7 +759,7 @@ iplists:
   url: https://iplists.firehol.org/files/socks_proxy.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 22
 
 # [anonymizers]sslproxies by Free Proxy List.:<a href="http://www.sslproxies.org/">SSLProxies.org</a>  open SSL proxies . source url is http://www.sslproxies.org/ 
@@ -782,7 +782,7 @@ iplists:
   url: https://iplists.firehol.org/files/sslproxies.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 28
 
 
@@ -830,7 +830,7 @@ iplists:
   url: https://iplists.firehol.org/files/xroxy.ipset
   regex: "^(\\P)"
   time:
-    hour: "*/4"
+    hour: "4"
     minute: 41
 
 

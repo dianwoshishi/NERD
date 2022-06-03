@@ -31,8 +31,9 @@ class UpdatePlanner(NERDModule):
     def add_nru_fields(self, ekey, rec, updates):
         """When a new entity is added, add NRU (next regular update) fields to
         its record."""
-        return [
+        g.um.update(ekey, [
             ('set', '_nru4h', rec['ts_added'] + timedelta(seconds=4*60*60)),
             ('set', '_nru1d', rec['ts_added'] + timedelta(days=1)),
             ('set', '_nru1w', rec['ts_added'] + timedelta(days=7)),
-        ]
+        ])
+        return None

@@ -154,7 +154,7 @@ def process_pulses(pulses):
     # get current time minus 30 days to get fresh pulses
     # TODO try to find a way to update only indicators created (or updated if it's possible?) after the last_update_time.
     #   There are pulses often adding a few IPs, now we always process all IPs in such a pulse, even the old ones that are already in NERD
-    time_for_upsert = datetime.utcnow() - timedelta(days=30)
+    time_for_upsert = datetime.utcnow() - timedelta(days=15)
     logger.info("Processing pulses")
     for i,pulse in enumerate(pulses):
         ipv4_counter = 0
@@ -190,7 +190,7 @@ def get_new_pulses():
         last_updated_time = f.readline()
         f.close()
         try:
-            datetime.strptime(last_updated_time, '%Y-%m-%dT%H:%M:%S')
+            datetime.strptime(last_updated_time.strip("\n"), '%Y-%m-%dT%H:%M:%S')
         except ValueError:
             logger.error("Wrong time format in otx_last_update.txt, must be '%Y-%m-%dT%H:%M:%S', not '{}'".format(last_updated_time))
             sys.exit(1)

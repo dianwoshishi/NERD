@@ -101,4 +101,5 @@ class EventTypeCounter(NERDModule):
 #             else:
 #                self.log.debug("Event type {} doesn't exceed {}% threshold for IP {} ({} events from {}).".format(event_type, self.event_threshold, key, types[event_type], total_events))
 
-        return [('set', 'events_meta.types', ret)] 
+        g.um.update(('ip', key), [('set', 'events_meta.types', ret)] )
+        return None
