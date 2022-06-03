@@ -45,13 +45,13 @@ class DShield(NERDModule):
         g.um.register_handler(
             self.set_dshield,  # function (or bound method) to call
             'ip',                # entity type
-            ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
-            ('dshield.reports',
-             'dshield.targets',
-             'dshield.mindate',
-             'dshield.updated',
-             'dshield.maxdate',
-             'dshield.latest')    # latest update time
+            ('!NEW', '!every1w'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
+            ('dshield_total.reports',
+             'dshield_total.targets',
+             'dshield_total.mindate',
+             'dshield_total.updated',
+             'dshield_total.maxdate',
+             'dshield_total.latest')    # latest update time
         )         
 
     def set_dshield(self, ekey, rec, updates):
@@ -69,7 +69,7 @@ class DShield(NERDModule):
         try:
             headers= {'user-agent':str(UserAgent().random)}
             # get response from server
-            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(5,7), headers=headers)
+            response = requests.get(f"{BASE_URL}/ip/{key}?json", timeout=(1,3), headers=headers)
             self.log.debug(f"{BASE_URL}/ip/{key}?json  -->  '{response.text}'")
             if response.text.startswith("<html><body>Too Many Requests"):
                 self.log.info(f"Can't get DShield data for IP {key}: Rate-limit exceeded")

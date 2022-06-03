@@ -1250,11 +1250,13 @@ def ipblock(ipblock=None):
         title = ipblock
         rec = mongo.db.ipblock.find_one({'_id': ipblock})
         if rec is not None:
-            cursor = mongo.db.ip.find({'ipblock': ipblock}, {'_id': 1})
+            cursor = mongo.db.ip.find({'ipblock': ipblock}, {'_id': 1, "rep": 1}).sort([("rep",-1)])
             rec['ips'] = []
             if cursor is not None:
                 for val in cursor:
-                    rec['ips'].append(int2ipstr(val['_id']))
+                    rec['ips'].append("{}\t{}".format(int2ipstr(val['_id']), val.get('rep', 0)))
+
+                
     else:
         flash('Insufficient permissions to search/view IP blocks.', 'error')
     return render_template('ipblock.html', ctrydata=ctrydata, **locals())
@@ -1303,10 +1305,11 @@ def bgppref(bgppref=None):
         prefix_info = ripe_client.prefix_overview(bgppref)['data']
         rec = mongo.db.bgppref.find_one({'_id': bgppref})
         if rec is not None:
-            cursor = mongo.db.ip.find({'bgppref': bgppref}, {'_id': 1})
+            cursor = mongo.db.ip.find({'bgppref': bgppref}, {'_id': 1, "rep": 1}).sort([("rep",-1)])
             rec['ips'] = []
             for val in cursor:
-                rec['ips'].append(int2ipstr(val['_id']))
+                rec['ips'].append("{}\t{}".format(int2ipstr(val['_id']), val.get('rep', 0)))
+                # rec['ips'].append("{}".format(int2ipstr(val['_id'])))
     else:
         flash('Insufficient permissions to search/view BGP prefixes.', 'error')
     return render_template('bgppref.html', ctrydata=ctrydata, **locals())

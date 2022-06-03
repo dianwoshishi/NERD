@@ -126,6 +126,7 @@ def main(cfg_file, process_index):
     import modules.otx
     import modules.score
     import modules.refresher
+    # import modules.dshield
     
     # Instantiate modules
     # TODO create all modules automatically (loop over all modules.* and find all objects derived from NERDModule)
@@ -155,7 +156,7 @@ def main(cfg_file, process_index):
         # modules.refresher.Refresher(),
         # modules.otx.OTX(),
         # modules.shodan.Shodan(),
-        modules.dshield.DShield(),
+        # modules.dshield.DShield(),
 
     ]
     

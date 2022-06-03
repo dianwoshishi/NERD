@@ -34,7 +34,7 @@ class OTX(NERDModule):
         g.um.register_handler(
             self.set_otx_general,  # function (or bound method) to call
             'ip',                # entity type
-            ('!NEW', '!every1d'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
+            ('!NEW', '!every1w'), # tuple/list/set of attributes to watch (their update triggers call of the registered method)
             ('otx.relate_pulses',)    # tuple/list/set of attributes the method may change
         )
 

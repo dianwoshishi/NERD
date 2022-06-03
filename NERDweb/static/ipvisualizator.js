@@ -176,7 +176,7 @@ class IPVisualizator {
 
     generate_next_color() {
         var ret = [];
-        if(this.next_color < 16777215){
+        if(this.next_color < 0xffffff){
             ret.push(this.next_color & 0xff);
             ret.push((this.next_color & 0xff00) >> 8);
             ret.push((this.next_color & 0xff0000) >> 16);
