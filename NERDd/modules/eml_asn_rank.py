@@ -64,4 +64,5 @@ class EML_ASN_rank(NERDModule):
             self.log.error("Can't get rank for AS{}: {}".format(key, repr(e)))
             return None
         
-        return [('set', 'eml_rank', rank)]
+        g.um.update(('ip', key), [('set', 'eml_rank', rank)])
+        return None

@@ -87,9 +87,11 @@ class Geolocation(NERDModule):
         #lon = result.location.longitude
         #lat = result.location.latitude
         
-        return [
+        g.um.update(('ip', key), [
             ('set', 'geo.ctry', ctry),
             ('set', 'geo.city', city),
             ('set', 'geo.tz', tz),
-        ]
+        ])
+
+        return None
         

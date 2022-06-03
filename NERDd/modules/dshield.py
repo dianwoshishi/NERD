@@ -109,4 +109,7 @@ class DShield(NERDModule):
 
         #self.log.debug("DShield record for IP {}: {}".format(key, dshield_record))
         self.success_count += 1
-        return [('set', 'dshield', dshield_record)]
+
+        
+        g.um.update(('ip', key), [('set', 'dshield_total', dshield_record)])
+        return None

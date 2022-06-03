@@ -95,6 +95,7 @@ class Score(NERDModule):
             return None
         rep = sum(scores)/len(scores)
 
+
         actions = []
         actions.append(('set', 'rep', rep))
 
@@ -102,7 +103,8 @@ class Score(NERDModule):
         date_str = data_date.strftime("%Y-%m-%d")
         actions.append(('array_upsert', 'rep_history', {'date' : date_str},
                                         [ ('set', 'reputation', rep)  ]))
-        return None
+
+        return actions
     # decay function: decay with the time
     def decay(self, delta):
         return 2 ** (-1 * (delta)/self.decay_factor)

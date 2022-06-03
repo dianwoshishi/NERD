@@ -58,7 +58,10 @@ class OTX(NERDModule):
             return None
         if relate_pulses == []:
             return None
-        return [('set', 'otx.relate_pulses', relate_pulses)]
+
+        g.um.update(('ip', key), [('set', 'otx.relate_pulses', relate_pulses)])
+
+        return None
 
 
 """
